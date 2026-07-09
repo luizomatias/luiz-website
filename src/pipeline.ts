@@ -181,6 +181,9 @@ export function initPipeline(): void {
   let llmPulse = 0
   const toolFlash = [0, 0, 0]
   let taskClock = 0
+  let hoveredTool = -1
+  let hoverLLM = false
+  const pings: Array<{ x: number; y: number; t: number }> = []
 
   const spawnTask = (x?: number, y?: number) => {
     agents.push({
@@ -216,6 +219,11 @@ export function initPipeline(): void {
     llmPulse = Math.max(0, llmPulse - dt * 2)
     for (let i = 0; i < 3; i++) toolFlash[i] = Math.max(0, toolFlash[i] - dt * 2.4)
 
+    for (let i = pings.length - 1; i >= 0; i--) {
+      pings[i].t += dt * 2.4
+      if (pings[i].t >= 1) pings.splice(i, 1)
+    }
+
     for (let i = agents.length - 1; i >= 0; i--) {
       const a = agents[i]
       switch (a.phase) {
@@ -235,7 +243,8 @@ export function initPipeline(): void {
           if (a.t <= 0) {
             if (a.loops > 0) {
               a.loops--
-              a.tool = Math.floor(Math.random() * 3)
+              // a hovered tool captures the routing — the visitor steers the loop
+              a.tool = hoveredTool >= 0 ? hoveredTool : Math.floor(Math.random() * 3)
               a.phase = 'toTool'
               a.t = 0
             } else {
@@ -327,9 +336,14 @@ export function initPipeline(): void {
     const names = ['TOOLS', 'MCP', 'SKILLS']
     ctx.font = '8px "IBM Plex Mono", monospace'
     for (let i = 0; i < 3; i++) {
-      ctx.strokeStyle = css(ink, 0.45)
+      const hot = i === hoveredTool
+      ctx.strokeStyle = hot ? css(accent, 0.75) : css(ink, 0.45)
       ctx.strokeRect(toolX - toolW / 2, toolYs[i] - toolH / 2, toolW, toolH)
-      ctx.fillStyle = css(ink, 0.5)
+      if (hot) {
+        ctx.fillStyle = css(accent, 0.08)
+        ctx.fillRect(toolX - toolW / 2, toolYs[i] - toolH / 2, toolW, toolH)
+      }
+      ctx.fillStyle = hot ? css(accent, 0.9) : css(ink, 0.5)
       ctx.fillText(names[i], toolX, toolYs[i] + 0.5)
       if (toolFlash[i] > 0) {
         const g = 6 * (1 - toolFlash[i])
@@ -339,6 +353,20 @@ export function initPipeline(): void {
           toolW + g * 2, toolH + g * 2,
         )
       }
+    }
+
+    // hovering the LLM keeps it charged
+    if (hoverLLM) {
+      ctx.strokeStyle = css(accent, 0.45)
+      ctx.strokeRect(ax - llmW / 2 - 3, llmY - llmH / 2 - 3, llmW + 6, llmH + 6)
+    }
+
+    // feed pings: a ring blooms where the visitor sows a task
+    for (const p of pings) {
+      ctx.strokeStyle = css(accent, (1 - p.t) * 0.55)
+      ctx.beginPath()
+      ctx.arc(p.x, p.y, 3 + p.t * 20, 0, Math.PI * 2)
+      ctx.stroke()
     }
 
     // output line
@@ -404,7 +432,10 @@ export function initPipeline(): void {
 
   const feed = () => {
     if (mode === 'agent') {
-      if (agents.length < 9) spawnTask(px, Math.min(py, h * 0.16))
+      if (agents.length < 12) {
+        spawnTask(px, Math.min(py, h * 0.16))
+        pings.push({ x: px, y: py, t: 0 })
+      }
       return
     }
     if (parts.length > 130) return
@@ -888,12 +919,27 @@ export function initPipeline(): void {
     py = e.clientY - r.top
     pointerIn = true
     highlight(stageAt(px, py))
+
+    // agent mode: hovering a tool routes the loop through it
+    hoveredTool = -1
+    hoverLLM = false
+    if (mode === 'agent') {
+      if (Math.abs(px - toolX) < toolW / 2 + 6) {
+        for (let i = 0; i < 3; i++) {
+          if (Math.abs(py - toolYs[i]) < toolH / 2 + 6) hoveredTool = i
+        }
+      }
+      hoverLLM =
+        Math.abs(px - ax) < llmW / 2 + 6 && Math.abs(py - llmY) < llmH / 2 + 6
+    }
   })
 
   host.addEventListener('pointerleave', () => {
     pointerIn = false
     px = -1000
     py = -1000
+    hoveredTool = -1
+    hoverLLM = false
     highlight(-1)
   })
 }
