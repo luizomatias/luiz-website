@@ -10,6 +10,8 @@ import { initProgress } from './progress'
 import { initTheme } from './theme'
 import { initTimeline } from './timeline'
 import { initVelocity } from './velocity'
+import { initSmoothScroll } from './smoothscroll'
+import { initLede } from './lede'
 import { initAmbient } from './ambient'
 import { initScramble } from './scramble'
 
@@ -26,3 +28,5 @@ initClock()
 initProgress()
 initTimeline()
 initVelocity()
+initSmoothScroll()
+initLede()

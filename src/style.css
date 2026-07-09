@@ -29,6 +29,8 @@ html[data-mode="irl"] {
   --halftone-alpha: 0;
   --sky-alpha: 0;
   --marquee-speed: 28s;
+  --shift-color: #ddd2b8;
+  --shift-max: 0.4;
 }
 
 html[data-mode="irl"][data-theme="dark"] {
@@ -40,6 +42,8 @@ html[data-mode="irl"][data-theme="dark"] {
   --accent-soft: #e0693f26;
   --line: rgba(236, 231, 219, 0.16);
   --line-strong: rgba(236, 231, 219, 0.5);
+  --shift-color: #060504;
+  --shift-max: 0.55;
 }
 
 html[data-mode="anime"] {
@@ -55,6 +59,8 @@ html[data-mode="anime"] {
   --sky-alpha: 1;
   --sky-gradient: linear-gradient(180deg, #aacff2 0%, #dcedfc 45%, #f3e9d7 100%);
   --marquee-speed: 14s;
+  --shift-color: #f6cfa4;
+  --shift-max: 0.42;
 }
 
 /* anime after dark: night sky over the city */
@@ -69,6 +75,8 @@ html[data-mode="anime"][data-theme="dark"] {
   --line-strong: rgba(220, 235, 251, 0.5);
   --halftone-alpha: 0.4;
   --sky-gradient: linear-gradient(180deg, #050d1d 0%, #142c52 55%, #3b2b4e 100%);
+  --shift-color: #010409;
+  --shift-max: 0.5;
 }
 
 /* ---------- reset-ish ---------- */
@@ -105,6 +113,18 @@ body::before {
   opacity: var(--sky-alpha);
   transition: opacity var(--theme-fade) var(--ease-snap);
   pointer-events: none;
+}
+
+/* scroll-driven tone shift: the page deepens toward the footer
+   (dusk in the anime world, fading light on paper) */
+.bg-shift {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--shift-color);
+  opacity: calc(var(--bg-shift, 0) * var(--shift-max, 0.4));
+  transition: background-color var(--theme-fade) var(--ease-snap);
 }
 
 ::selection {
@@ -942,6 +962,21 @@ html[data-mode="anime"] .portrait-mode--anime {
 .about-lede em {
   color: var(--accent);
   transition: color var(--theme-fade);
+}
+
+/* words light up one by one as the lede scrolls through */
+.lede-word {
+  opacity: 0.14;
+  transition: opacity 0.5s var(--ease-out);
+}
+
+.lede-word.is-lit {
+  opacity: 1;
+}
+
+.lede-word--em {
+  font-style: italic;
+  color: var(--accent);
 }
 
 .about-para {
