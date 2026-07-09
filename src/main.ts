@@ -8,6 +8,8 @@ import { initMagnetic } from './magnetic'
 import { initClock } from './clock'
 import { initProgress } from './progress'
 import { initTheme } from './theme'
+import { initTimeline } from './timeline'
+import { initVelocity } from './velocity'
 import { initAmbient } from './ambient'
 import { initScramble } from './scramble'
 
@@ -22,3 +24,5 @@ initReveals()
 initMagnetic()
 initClock()
 initProgress()
+initTimeline()
+initVelocity()

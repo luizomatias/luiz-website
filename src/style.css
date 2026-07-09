@@ -868,6 +868,7 @@ html[data-mode="anime"] .portrait-mode--anime {
   z-index: 1;
   background: var(--paper-deep);
   transition: background-color var(--theme-fade) var(--ease-snap);
+  transform: skewY(var(--scroll-skew, 0deg));
 }
 
 .marquee-track {
@@ -990,6 +991,26 @@ html[data-mode="anime"] .portrait-mode--anime {
 /* ---------- experience ---------- */
 .jobs {
   list-style: none;
+  position: relative;
+  padding-left: clamp(1.6rem, 3vw, 2.6rem);
+}
+
+/* the rail: a neutral track plus an accent line that draws on scroll */
+.jobs::before,
+.jobs::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--line);
+}
+
+.jobs::after {
+  background: var(--accent);
+  transform: scaleY(var(--jobs-progress, 0));
+  transform-origin: top;
 }
 
 .job {
@@ -999,6 +1020,27 @@ html[data-mode="anime"] .portrait-mode--anime {
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   gap: 1rem 3rem;
   position: relative;
+}
+
+/* station dot on the rail, lit once the row scrolls in */
+.job::after {
+  content: "";
+  position: absolute;
+  left: calc(clamp(1.6rem, 3vw, 2.6rem) * -1 - 4.5px);
+  top: clamp(2.3rem, 5.2vh, 3.4rem);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  transition: background-color 0.5s var(--ease-out), border-color 0.5s,
+    box-shadow 0.5s;
+}
+
+.job.is-in::after {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
 }
 
 .job::before {
@@ -1087,6 +1129,7 @@ html[data-mode="anime"] .portrait-mode--anime {
   overflow: hidden;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  transform: skewY(var(--scroll-skew, 0deg));
 }
 
 .stack-track {
