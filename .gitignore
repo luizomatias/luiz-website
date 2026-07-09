@@ -1,0 +1,43 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+*.local
+
+# Vite / tooling caches
+.vite
+.cache
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor folders
+.vscode
+.idea
+*.swp
+
+# Stray Python tooling (not part of this project)
+.python-version
+pyproject.toml
+main.py
+__pycache__
+.venv
+
+# Personal / source materials (not for the public repo)
+CONTEXT.md
+resume_LuizOtavio_2026.pdf
+Screenshot*.png
+luiz_anime_best.png

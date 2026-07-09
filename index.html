@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en" data-mode="irl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luiz Otávio — Applied ML Lead</title>
+    <meta name="description" content="Luiz Otávio Matias da Luz — Applied ML Lead building production-grade machine learning systems end-to-end. Belo Horizonte, Brazil." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23181712'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' fill='%23F2EFE8' text-anchor='middle' font-style='italic'%3ELz%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
+    <script>
+      // set theme before first paint to avoid a light flash
+      (function () {
+        try {
+          var t = localStorage.getItem('theme')
+          if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.dataset.theme = 'dark'
+          }
+        } catch (e) {}
+      })()
+    </script>
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="halftone" aria-hidden="true"></div>
+    <canvas class="ambient" aria-hidden="true"></canvas>
+    <div class="progress" aria-hidden="true"></div>
+
+    <div class="cursor" aria-hidden="true">
+      <div class="cursor-dot"></div>
+      <div class="cursor-ring"><span class="cursor-label"></span></div>
+    </div>
+
+    <div class="preloader" aria-hidden="true">
+      <div class="preloader-inner">
+        <span class="preloader-jp">ルイス・オタヴィオ</span>
+        <span class="preloader-name">Luiz Otávio</span>
+      </div>
+    </div>
+
+    <header class="nav">
+      <a class="nav-logo" href="#top" data-magnetic>
+        <span class="nav-logo-mark">Lz</span>
+        <span class="nav-logo-jp">ルイス</span>
+      </a>
+      <nav class="nav-links" aria-label="Sections">
+        <a href="#about" data-magnetic><sup>01</sup> <span data-scramble>About</span></a>
+        <a href="#experience" data-magnetic><sup>02</sup> <span data-scramble>Experience</span></a>
+        <a href="#stack" data-magnetic><sup>03</sup> <span data-scramble>Stack</span></a>
+        <a href="#contact" data-magnetic><sup>04</sup> <span data-scramble>Contact</span></a>
+      </nav>
+      <div class="nav-right">
+        <div class="nav-meta mono">
+          <span id="clock">00:00:00</span>
+          <span class="nav-meta-sep">/</span>
+          <span>BELO HORIZONTE</span>
+        </div>
+        <button class="theme-toggle" id="theme-toggle" type="button"
+                aria-label="Switch to dark mode" data-cursor="THEME">
+          <span class="theme-toggle-icon" aria-hidden="true">☾</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- ============ HERO ============ -->
+      <section class="hero">
+        <div class="hero-grid">
+          <div class="hero-text">
+            <p class="hero-eyebrow mono reveal">
+              <span class="hero-eyebrow-dot"></span>
+              AI &amp; DATA SCIENCE TECH LEAD — STARDAY FOODS
+            </p>
+            <h1 class="hero-title">
+              <span class="hero-line" data-split>Luiz</span>
+              <span class="hero-line" data-split>Otávio</span>
+              <span class="hero-line hero-line--serif"><em data-split>Matias da Luz</em></span>
+            </h1>
+            <p class="hero-tag reveal">
+              I design and operate <strong>production ML systems</strong> end-to-end —
+              from data pipelines over billions of records to models people
+              actually use.
+            </p>
+            <div class="hero-cta reveal">
+              <a class="btn" href="mailto:luizomatias2@gmail.com" data-magnetic data-cursor="EMAIL">
+                <span>Get in touch</span>
+                <span class="btn-arrow">→</span>
+              </a>
+              <span class="hero-hint mono">the portrait is not just a portrait →</span>
+            </div>
+          </div>
+
+          <figure class="portrait" id="portrait" data-cursor="SWITCH" tabindex="0" role="button"
+                  aria-label="Toggle between real and anime worlds">
+            <div class="portrait-corners" aria-hidden="true"></div>
+            <span class="portrait-pow" aria-hidden="true">ドンッ!!</span>
+            <div class="portrait-frame">
+              <img class="portrait-img portrait-img--real" src="/portrait-real.png"
+                   alt="Luiz Otávio, photographed above Belo Horizonte" draggable="false" />
+              <img class="portrait-img portrait-img--anime" src="/portrait-anime.png"
+                   alt="Luiz Otávio, redrawn as an anime character" draggable="false" />
+              <svg class="portrait-burst" viewBox="0 0 200 200" aria-hidden="true">
+                <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                  <line x1="100" y1="4"   x2="100" y2="34" />
+                  <line x1="100" y1="196" x2="100" y2="166" />
+                  <line x1="4"   y1="100" x2="34"  y2="100" />
+                  <line x1="196" y1="100" x2="166" y2="100" />
+                  <line x1="32"  y1="32"  x2="53"  y2="53" />
+                  <line x1="168" y1="32"  x2="147" y2="53" />
+                  <line x1="32"  y1="168" x2="53"  y2="147" />
+                  <line x1="168" y1="168" x2="147" y2="147" />
+                  <line x1="100" y1="14"  x2="100" y2="28" transform="rotate(22.5 100 100)" />
+                  <line x1="100" y1="186" x2="100" y2="172" transform="rotate(22.5 100 100)" />
+                  <line x1="14"  y1="100" x2="28"  y2="100" transform="rotate(22.5 100 100)" />
+                  <line x1="186" y1="100" x2="172" y2="100" transform="rotate(22.5 100 100)" />
+                </g>
+              </svg>
+            </div>
+            <figcaption class="portrait-caption mono">
+              <span class="portrait-mode portrait-mode--irl">IRL</span>
+              <span class="portrait-swap">⇄</span>
+              <span class="portrait-mode portrait-mode--anime">アニメ</span>
+              <span class="portrait-hint portrait-hint--fine">hover to peek · click to switch worlds</span>
+              <span class="portrait-hint portrait-hint--touch">tap to switch worlds</span>
+            </figcaption>
+          </figure>
+        </div>
+
+        <span class="hero-vertical mono" aria-hidden="true">ルイス・オタヴィオ — エンジニア</span>
+
+        <div class="hero-foot mono reveal">
+          <span>APPLIED&nbsp;ML&nbsp;/&nbsp;LLM&nbsp;SYSTEMS</span>
+          <span class="hero-scroll" aria-hidden="true">SCROLL<span class="hero-scroll-line"></span></span>
+          <span>EST.&nbsp;2020&nbsp;IN&nbsp;PRODUCTION</span>
+        </div>
+      </section>
+
+      <!-- ============ MARQUEE ============ -->
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+          <span>Machine Learning</span><i>✳</i><span>LLM Pipelines</span><i>✳</i>
+          <span>Embeddings Platforms</span><i>✳</i><span>Multimodal Systems</span><i>✳</i>
+          <span>Data Flywheels</span><i>✳</i><span>MLOps</span><i>✳</i>
+          <span>Machine Learning</span><i>✳</i><span>LLM Pipelines</span><i>✳</i>
+          <span>Embeddings Platforms</span><i>✳</i><span>Multimodal Systems</span><i>✳</i>
+          <span>Data Flywheels</span><i>✳</i><span>MLOps</span><i>✳</i>
+        </div>
+      </div>
+
+      <!-- ============ ABOUT ============ -->
+      <section class="section about" id="about">
+        <header class="section-head">
+          <span class="section-index mono">01</span>
+          <h2 class="section-title">About</h2>
+          <span class="section-jp mono" aria-hidden="true">自己紹介</span>
+        </header>
+        <div class="about-body">
+          <p class="about-lede reveal">
+            Applied ML Lead with a track record of building and operating
+            <em>production-grade ML systems</em> end-to-end — from data pipelines
+            to model deployment and evaluation.
+          </p>
+          <p class="about-para reveal">
+            Currently leading large-scale AI systems at <strong>Starday Foods</strong>:
+            data platforms, LLM-based pipelines, and automated analysis workflows
+            over billions of records. My background spans multimodal systems,
+            embeddings platforms, and LLM applications at scale — with a strong focus
+            on operational ML, infrastructure, and building data flywheels that
+            continuously improve model performance.
+          </p>
+          <ul class="stats reveal-group">
+            <li class="stat reveal">
+              <span class="stat-value"><span data-count="6">0</span>+</span>
+              <span class="stat-label mono">YEARS SHIPPING ML</span>
+            </li>
+            <li class="stat reveal">
+              <span class="stat-value"><span data-count="7">0</span>×</span>
+              <span class="stat-label mono">FASTER MODEL DEV</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ============ EXPERIENCE ============ -->
+      <section class="section experience" id="experience">
+        <header class="section-head">
+          <span class="section-index mono">02</span>
+          <h2 class="section-title">Experience</h2>
+          <span class="section-jp mono" aria-hidden="true">経歴</span>
+        </header>
+
+        <ol class="jobs">
+          <li class="job reveal">
+            <div class="job-top">
+              <h3 class="job-company" data-scramble>Starday Foods</h3>
+              <div class="job-meta">
+                <span class="job-role">AI &amp; Data Science Tech Lead</span>
+                <span class="job-period mono">APR 2025 — NOW</span>
+              </div>
+            </div>
+            <ul class="job-points">
+              <li>First data-focused technical lead — owning the end-to-end ML and data platform behind multiple AI products.</li>
+              <li>Designed and deployed scalable ML infrastructure on AWS (S3, Glue, Athena, Iceberg, ECS Fargate, Step Functions) processing billions of records.</li>
+              <li>Built production NLP &amp; LLM pipelines that convert unstructured data into structured signals, plus ontology-based scoring and topic aggregation.</li>
+              <li>Partner with product and business teams to turn ambiguous requirements into production ML systems.</li>
+            </ul>
+          </li>
+
+          <li class="job reveal">
+            <div class="job-top">
+              <h3 class="job-company" data-scramble>Mercado Libre</h3>
+              <div class="job-meta">
+                <span class="job-role">Senior ML Engineer — Engineering Research</span>
+                <span class="job-period mono">OCT 2022 — APR 2025</span>
+              </div>
+            </div>
+            <ul class="job-points">
+              <li>Architected and led a production-grade embeddings serving platform used across multiple ML systems.</li>
+              <li>Built multimodal pipelines combining vision and text models (CLIP, BLIP-2) over large-scale Portuguese and Spanish datasets.</li>
+              <li>Developed LLM tooling and evaluation pipelines, including ground-truth-based prompt optimization systems.</li>
+              <li>Improved internal AutoML — model development time cut from one week to one day.</li>
+            </ul>
+          </li>
+
+          <li class="job reveal">
+            <div class="job-top">
+              <h3 class="job-company" data-scramble>Inter</h3>
+              <div class="job-meta">
+                <span class="job-role">Data Scientist / ML Engineer</span>
+                <span class="job-period mono">APR 2021 — OCT 2022</span>
+              </div>
+            </div>
+            <ul class="job-points">
+              <li>Predicted customers' invested assets with deep learning on tabular data — R$15M revenue within a month, validated by A/B tests.</li>
+              <li>Matched customer complaints to the best representatives using NLP — the company's best reputation score in 3 years.</li>
+              <li>Customer segmentation on an Airflow batch job — +10% customer conversion above target.</li>
+            </ul>
+          </li>
+
+          <li class="job reveal">
+            <div class="job-top">
+              <h3 class="job-company" data-scramble>Sympla</h3>
+              <div class="job-meta">
+                <span class="job-role">Data Scientist</span>
+                <span class="job-period mono">FEB 2020 — APR 2021</span>
+              </div>
+            </div>
+            <ul class="job-points">
+              <li>Content moderation across video, image, and text using computer vision and NLP.</li>
+              <li>Designed an internal framework for fraud event detection and a web app for fraud analysis.</li>
+            </ul>
+          </li>
+        </ol>
+      </section>
+
+      <!-- ============ STACK ============ -->
+      <section class="section stack" id="stack">
+        <header class="section-head">
+          <span class="section-index mono">03</span>
+          <h2 class="section-title">Stack</h2>
+          <span class="section-jp mono" aria-hidden="true">道具箱</span>
+        </header>
+        <div class="stack-marquees reveal" aria-label="Technologies">
+          <div class="stack-row">
+            <div class="stack-track">
+              <span>Python</span><span>PyTorch</span><span>LLMs</span><span>NLP</span>
+              <span>Computer Vision</span><span>Embeddings</span><span>CLIP</span><span>BLIP-2</span>
+              <span>Python</span><span>PyTorch</span><span>LLMs</span><span>NLP</span>
+              <span>Computer Vision</span><span>Embeddings</span><span>CLIP</span><span>BLIP-2</span>
+            </div>
+          </div>
+          <div class="stack-row stack-row--reverse">
+            <div class="stack-track">
+              <span>AWS</span><span>Iceberg</span><span>Airflow</span><span>ECS Fargate</span>
+              <span>Athena</span><span>Glue</span><span>Step Functions</span><span>AutoML</span>
+              <span>AWS</span><span>Iceberg</span><span>Airflow</span><span>ECS Fargate</span>
+              <span>Athena</span><span>Glue</span><span>Step Functions</span><span>AutoML</span>
+            </div>
+          </div>
+          <div class="stack-row">
+            <div class="stack-track">
+              <span>Prompt Optimization</span><span>Eval Pipelines</span><span>A/B Testing</span>
+              <span>Data Quality</span><span>Distributed Systems</span><span>Monitoring</span>
+              <span>Prompt Optimization</span><span>Eval Pipelines</span><span>A/B Testing</span>
+              <span>Data Quality</span><span>Distributed Systems</span><span>Monitoring</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="education reveal">
+          <h3 class="education-title mono">EDUCATION — 学歴</h3>
+          <ul class="education-list">
+            <li>
+              <span class="education-degree">Postgraduate, Artificial Intelligence &amp; Machine Learning</span>
+              <span class="education-school">PUC Minas Gerais <span class="mono">— 2020</span></span>
+            </li>
+            <li>
+              <span class="education-degree">B.Eng., Control &amp; Automation Engineering</span>
+              <span class="education-school">PUC Minas Gerais <span class="mono">— 2018</span></span>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <!-- ============ CONTACT / FOOTER ============ -->
+    <footer class="footer" id="contact">
+      <header class="section-head">
+        <span class="section-index mono">04</span>
+        <h2 class="section-title">Contact</h2>
+        <span class="section-jp mono" aria-hidden="true">連絡</span>
+      </header>
+      <p class="footer-lede reveal">Have data? I'll make it <em>learn</em>.</p>
+      <a class="footer-email reveal" href="mailto:luizomatias2@gmail.com" data-magnetic data-cursor="SAY HI">
+        <span data-split-hover>luizomatias2@gmail.com</span>
+      </a>
+      <div class="footer-links reveal">
+        <a href="https://www.linkedin.com/in/luizotaviomatiasdaluz/" target="_blank" rel="noopener" data-magnetic><span data-scramble>LinkedIn</span> ↗</a>
+        <a href="https://github.com/luizomatias" target="_blank" rel="noopener" data-magnetic><span data-scramble>GitHub</span> ↗</a>
+        <a href="mailto:luizomatias2@gmail.com" data-magnetic><span data-scramble>Email</span> ↗</a>
+      </div>
+      <div class="footer-base mono">
+        <span>© 2026 LUIZ OTÁVIO MATIAS DA LUZ</span>
+        <span class="footer-mode-note">CURRENT WORLD: <b id="mode-note">IRL</b></span>
+        <span>BELO HORIZONTE, BRAZIL — <span id="clock-footer">00:00:00</span></span>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
