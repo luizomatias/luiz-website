@@ -1,6 +1,6 @@
 # Luiz Otávio — Portfolio
 
-A one-page portfolio for Luiz Otávio Matias da Luz, Applied ML Lead.
+A one-page portfolio for Luiz Otávio Matias da Luz, AI/ML Engineer.
 
 The centerpiece is a portrait that switches the whole site between two
 worlds — **IRL** (paper-and-ink editorial) and **anime** (sky and halftone) —
