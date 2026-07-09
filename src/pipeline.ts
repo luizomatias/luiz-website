@@ -54,6 +54,8 @@ export function initPipeline(): void {
   const root = document.documentElement
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 
+  let mode: 'ml' | 'agent' = 'ml'
+
   let w = 0
   let h = 0
   // geometry (recomputed on resize)
@@ -65,6 +67,16 @@ export function initPipeline(): void {
   let modelTop = 0
   let modelBot = 0
   let modelW = 0
+  // agent-mode geometry
+  let ax = 0 // llm box centre x
+  let llmW = 0
+  let llmH = 0
+  let llmY = 0
+  let toolX = 0
+  let toolW = 0
+  let toolH = 0
+  let toolYs: number[] = []
+  let harness = { x0: 0, y0: 0, x1: 0, y1: 0 }
 
   const layout = () => {
     cx = w * 0.56
@@ -75,6 +87,21 @@ export function initPipeline(): void {
     modelBot = h * 0.68
     modelW = w * 0.42
     cols = [-2, -1, 0, 1, 2].map((i) => cx + i * w * 0.085)
+
+    ax = cx - w * 0.12
+    llmW = w * 0.28
+    llmH = h * 0.085
+    llmY = h * 0.42
+    toolX = cx + w * 0.26
+    toolW = w * 0.27
+    toolH = h * 0.058
+    toolYs = [h * 0.3, h * 0.42, h * 0.54]
+    harness = {
+      x0: ax - llmW / 2 - w * 0.055,
+      y0: h * 0.22,
+      x1: toolX + toolW / 2 + w * 0.035,
+      y1: h * 0.64,
+    }
   }
 
   // theme colors, lerped so world switches glide
@@ -139,6 +166,235 @@ export function initPipeline(): void {
   }
 
   // ---- pointer: the cursor feeds the pipeline ----
+  // ---- agent mode: task → LLM harness loop over tools → answer ----
+  interface AgentP {
+    phase: 'task' | 'think' | 'toTool' | 'back' | 'answer'
+    x: number
+    y: number
+    t: number
+    tool: number
+    loops: number
+    seed: number
+  }
+
+  const agents: AgentP[] = []
+  let llmPulse = 0
+  const toolFlash = [0, 0, 0]
+  let taskClock = 0
+
+  const spawnTask = (x?: number, y?: number) => {
+    agents.push({
+      phase: 'task',
+      x: x ?? ax + (Math.random() - 0.5) * w * 0.3,
+      y: y ?? -6,
+      t: 0,
+      tool: 0,
+      loops: 2 + Math.floor(Math.random() * 2),
+      seed: Math.random() * Math.PI * 2,
+    })
+  }
+
+  const qp = (
+    x0: number, y0: number, qx: number, qy: number, x1: number, y1: number, t: number,
+  ) => {
+    const u = 1 - t
+    return {
+      x: u * u * x0 + 2 * u * t * qx + t * t * x1,
+      y: u * u * y0 + 2 * u * t * qy + t * t * y1,
+    }
+  }
+
+  const toolPort = (i: number) => ({ x: toolX - toolW / 2, y: toolYs[i] })
+  const llmPort = () => ({ x: ax + llmW / 2, y: llmY })
+
+  const agentStep = (dt: number) => {
+    taskClock += dt
+    if (agents.length < 5 && taskClock > 2.1) {
+      taskClock = 0
+      spawnTask()
+    }
+    llmPulse = Math.max(0, llmPulse - dt * 2)
+    for (let i = 0; i < 3; i++) toolFlash[i] = Math.max(0, toolFlash[i] - dt * 2.4)
+
+    for (let i = agents.length - 1; i >= 0; i--) {
+      const a = agents[i]
+      switch (a.phase) {
+        case 'task': {
+          a.y += h * 0.1 * dt
+          a.x += (ax - a.x) * dt * 2.2
+          a.x += Math.sin(a.seed + a.y * 0.05) * 0.4
+          if (a.y >= llmY - llmH / 2 - 3) {
+            a.phase = 'think'
+            a.t = 0.42
+            llmPulse = 1
+          }
+          break
+        }
+        case 'think': {
+          a.t -= dt
+          if (a.t <= 0) {
+            if (a.loops > 0) {
+              a.loops--
+              a.tool = Math.floor(Math.random() * 3)
+              a.phase = 'toTool'
+              a.t = 0
+            } else {
+              a.phase = 'answer'
+              a.x = ax
+              a.y = llmY + llmH / 2 + 3
+            }
+          }
+          break
+        }
+        case 'toTool': {
+          a.t += dt / 0.5
+          const p0 = llmPort()
+          const p1 = toolPort(a.tool)
+          const pos = qp(
+            p0.x, p0.y,
+            (p0.x + p1.x) / 2, Math.min(p0.y, p1.y) - h * 0.045,
+            p1.x, p1.y, Math.min(1, a.t),
+          )
+          a.x = pos.x
+          a.y = pos.y
+          if (a.t >= 1) {
+            toolFlash[a.tool] = 1
+            a.phase = 'back'
+            a.t = 0
+          }
+          break
+        }
+        case 'back': {
+          a.t += dt / 0.5
+          const p0 = toolPort(a.tool)
+          const p1 = llmPort()
+          const pos = qp(
+            p0.x, p0.y,
+            (p0.x + p1.x) / 2, Math.max(p0.y, p1.y) + h * 0.045,
+            p1.x, p1.y, Math.min(1, a.t),
+          )
+          a.x = pos.x
+          a.y = pos.y
+          if (a.t >= 1) {
+            a.phase = 'think'
+            a.t = 0.3
+            llmPulse = 0.7
+          }
+          break
+        }
+        case 'answer': {
+          a.y += h * 0.12 * dt
+          if (a.y >= h * 0.97) agents.splice(i, 1)
+          break
+        }
+      }
+    }
+  }
+
+  const agentStructure = (now: number) => {
+    ctx.lineWidth = 1
+
+    // the harness: dashed boundary around agent + tools
+    ctx.strokeStyle = css(ink, 0.32)
+    ctx.setLineDash([4, 5])
+    ctx.strokeRect(harness.x0, harness.y0, harness.x1 - harness.x0, harness.y1 - harness.y0)
+    ctx.setLineDash([])
+
+    // faint connectors llm ↔ tools
+    ctx.strokeStyle = css(ink, 0.1)
+    ctx.beginPath()
+    for (let i = 0; i < 3; i++) {
+      ctx.moveTo(ax + llmW / 2, llmY)
+      ctx.lineTo(toolX - toolW / 2, toolYs[i])
+    }
+    ctx.stroke()
+
+    // llm box
+    ctx.strokeStyle = css(ink, 0.6)
+    ctx.strokeRect(ax - llmW / 2, llmY - llmH / 2, llmW, llmH)
+    ctx.fillStyle = css(ink, 0.55)
+    ctx.font = '11px "IBM Plex Mono", monospace'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('LLM', ax, llmY + 0.5)
+    if (llmPulse > 0) {
+      const g = 9 * (1 - llmPulse)
+      ctx.strokeStyle = css(accent, llmPulse * 0.8)
+      ctx.strokeRect(ax - llmW / 2 - g, llmY - llmH / 2 - g, llmW + g * 2, llmH + g * 2)
+    }
+
+    // tool rack
+    const names = ['TOOLS', 'MCP', 'SKILLS']
+    ctx.font = '8px "IBM Plex Mono", monospace'
+    for (let i = 0; i < 3; i++) {
+      ctx.strokeStyle = css(ink, 0.45)
+      ctx.strokeRect(toolX - toolW / 2, toolYs[i] - toolH / 2, toolW, toolH)
+      ctx.fillStyle = css(ink, 0.5)
+      ctx.fillText(names[i], toolX, toolYs[i] + 0.5)
+      if (toolFlash[i] > 0) {
+        const g = 6 * (1 - toolFlash[i])
+        ctx.strokeStyle = css(accent, toolFlash[i] * 0.85)
+        ctx.strokeRect(
+          toolX - toolW / 2 - g, toolYs[i] - toolH / 2 - g,
+          toolW + g * 2, toolH + g * 2,
+        )
+      }
+    }
+
+    // output line
+    ctx.strokeStyle = css(ink, 0.18)
+    ctx.beginPath()
+    ctx.moveTo(ax, harness.y1 + 6)
+    ctx.lineTo(ax, h * 0.97)
+    ctx.stroke()
+
+    void now
+  }
+
+  const agentParticles = (now: number) => {
+    for (const a of agents) {
+      switch (a.phase) {
+        case 'task': {
+          ctx.fillStyle = css(ink, 0.85)
+          ctx.save()
+          ctx.translate(a.x, a.y)
+          ctx.rotate(a.seed + now * 0.0016)
+          ctx.fillRect(-1.9, -1.3, 3.8, 2.6)
+          ctx.restore()
+          break
+        }
+        case 'toTool':
+        case 'back': {
+          ctx.fillStyle = css(a.phase === 'toTool' ? ink : accent, 0.9)
+          ctx.save()
+          ctx.translate(a.x, a.y)
+          ctx.rotate(now * 0.004)
+          ctx.fillRect(-1.8, -1.8, 3.6, 3.6)
+          ctx.restore()
+          break
+        }
+        case 'answer': {
+          ctx.fillStyle = css(accent, 0.14)
+          ctx.beginPath()
+          ctx.arc(a.x, a.y, 7, 0, Math.PI * 2)
+          ctx.fill()
+          ctx.strokeStyle = css(accent, 0.3)
+          ctx.beginPath()
+          ctx.moveTo(a.x, a.y - 13)
+          ctx.lineTo(a.x, a.y - 4)
+          ctx.stroke()
+          ctx.fillStyle = css(accent, 1)
+          ctx.beginPath()
+          ctx.arc(a.x, a.y, 2.3, 0, Math.PI * 2)
+          ctx.fill()
+          break
+        }
+        case 'think':
+          break
+      }
+    }
+  }
+
   let px = -1000
   let py = -1000
   let pointerIn = false
@@ -147,6 +403,10 @@ export function initPipeline(): void {
   let feedClock = 0
 
   const feed = () => {
+    if (mode === 'agent') {
+      if (agents.length < 9) spawnTask(px, Math.min(py, h * 0.16))
+      return
+    }
     if (parts.length > 130) return
     const jx = px + (Math.random() - 0.5) * 14
     if (py < gateY - 12) {
@@ -199,8 +459,15 @@ export function initPipeline(): void {
     }
   }
 
-  const stageAt = (y: number): number =>
-    y < gateY ? 0 : y < embedTop ? 1 : y < modelTop ? 2 : y < modelBot ? 3 : 4
+  const stageAt = (x: number, y: number): number => {
+    if (mode === 'agent') {
+      if (y < harness.y0 * 0.85) return 0
+      if (y < harness.y0) return 1
+      if (y < harness.y1) return x > cx + w * 0.06 ? 3 : 2
+      return 4
+    }
+    return y < gateY ? 0 : y < embedTop ? 1 : y < modelTop ? 2 : y < modelBot ? 3 : 4
+  }
 
   const labels = Array.from(
     host.querySelectorAll<HTMLElement>('.pipeline-labels li'),
@@ -484,9 +751,15 @@ export function initPipeline(): void {
     ink = mix(ink, inkT, 0.08)
     accent = mix(accent, accentT, 0.08)
     ctx.clearRect(0, 0, w, h)
-    step(dt, now)
-    drawStructure(now)
-    drawParticles(now)
+    if (mode === 'agent') {
+      agentStep(dt)
+      agentStructure(now)
+      agentParticles(now)
+    } else {
+      step(dt, now)
+      drawStructure(now)
+      drawParticles(now)
+    }
     if (running && !document.hidden) raf = requestAnimationFrame(frame)
   }
 
@@ -513,6 +786,10 @@ export function initPipeline(): void {
   // reduced motion: a single, calm schematic frame
   const staticFrame = () => {
     ctx.clearRect(0, 0, w, h)
+    if (mode === 'agent') {
+      agentStructure(0)
+      return
+    }
     drawStructure(0)
     ctx.fillStyle = css(ink, 0.7)
     for (let i = 0; i < 14; i++) {
@@ -539,6 +816,53 @@ export function initPipeline(): void {
   new ResizeObserver(resize).observe(host)
   resize()
 
+  // ---- mode tabs: ML PIPELINE ⇄ LLM AGENT ----
+  const LABEL_SETS: Record<'ml' | 'agent', Array<[number, string, string]>> = {
+    ml: [
+      [5, '01', 'RAW DATA'],
+      [23, '02', 'PREPROCESS'],
+      [40, '03', 'EMBEDDINGS'],
+      [60, '04', 'MODEL'],
+      [84, '05', 'DEPLOY'],
+    ],
+    agent: [
+      [5, '01', 'TASK'],
+      [17, '02', 'HARNESS'],
+      [40, '03', 'AGENT LOOP'],
+      [57, '04', 'TOOLS · MCP'],
+      [84, '05', 'OUTPUT'],
+    ],
+  }
+  const CAPTIONS = {
+    ml: 'DATA FLYWHEEL — 弾み車',
+    agent: 'AGENT HARNESS — エージェント',
+  }
+  const captionEl = host.querySelector<HTMLElement>('.pipeline-caption')
+  const tabs = Array.from(host.querySelectorAll<HTMLElement>('.pipeline-tab'))
+
+  const setMode = (m: 'ml' | 'agent') => {
+    if (m === mode) return
+    mode = m
+    tabs.forEach((b) => b.classList.toggle('is-on', b.dataset.pmode === m))
+    LABEL_SETS[m].forEach(([top, n, txt], i) => {
+      const li = labels[i]
+      if (!li) return
+      li.style.top = `${top}%`
+      li.innerHTML = `<sup>${n}</sup> ${txt}`
+    })
+    if (captionEl) captionEl.textContent = CAPTIONS[m]
+    highlight(-1)
+    if (m === 'agent' && agents.length === 0) {
+      spawnTask(undefined, h * 0.08)
+      spawnTask(undefined, h * 0.24)
+    }
+    if (reduced) staticFrame()
+  }
+
+  tabs.forEach((b) =>
+    b.addEventListener('click', () => setMode(b.dataset.pmode as 'ml' | 'agent')),
+  )
+
   if (reduced) return
 
   // warm start: pre-fill the flow so it doesn't begin empty
@@ -563,7 +887,7 @@ export function initPipeline(): void {
     px = e.clientX - r.left
     py = e.clientY - r.top
     pointerIn = true
-    highlight(stageAt(py))
+    highlight(stageAt(px, py))
   })
 
   host.addEventListener('pointerleave', () => {

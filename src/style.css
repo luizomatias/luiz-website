@@ -997,6 +997,39 @@ html[data-mode="anime"] .portrait-mode--anime {
   height: 100%;
 }
 
+.pipeline-tabs {
+  position: absolute;
+  top: -2.6rem;
+  left: 0;
+  display: flex;
+  gap: 0.4rem;
+  pointer-events: auto;
+}
+
+.pipeline-tab {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.pipeline-tab.is-on {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.pipeline-tab:not(.is-on):hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .pipeline-labels {
   position: absolute;
   inset: 0;
