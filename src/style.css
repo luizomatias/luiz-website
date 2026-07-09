@@ -1098,8 +1098,12 @@ html[data-mode="anime"] .marquee-track i::before {
     display: block;
   }
 
+  /* stacked below the text: full block, tap the tabs to switch modes */
   .pipeline {
-    display: none;
+    margin: 4rem auto 1.5rem;
+    min-height: 0;
+    height: clamp(400px, 110vw, 520px);
+    max-width: 420px;
   }
 }
 
