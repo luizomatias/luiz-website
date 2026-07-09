@@ -18,31 +18,31 @@
 
 /* ---------- world themes ---------- */
 html[data-mode="irl"] {
-  --paper: #f2efe8;
-  --paper-deep: #e9e5da;
-  --ink: #181712;
-  --ink-soft: #6b6659;
-  --accent: #c4552f;
-  --accent-soft: #c4552f22;
-  --line: rgba(24, 23, 18, 0.16);
-  --line-strong: rgba(24, 23, 18, 0.5);
+  --paper: #f5f5f7;
+  --paper-deep: #eaeaee;
+  --ink: #1d1d1f;
+  --ink-soft: #6e6e73;
+  --accent: #0071e3;
+  --accent-soft: #0071e322;
+  --line: rgba(29, 29, 31, 0.14);
+  --line-strong: rgba(29, 29, 31, 0.45);
   --halftone-alpha: 0;
   --sky-alpha: 0;
   --marquee-speed: 28s;
-  --shift-color: #ddd2b8;
-  --shift-max: 0.4;
+  --shift-color: #d8d8de;
+  --shift-max: 0.45;
 }
 
 html[data-mode="irl"][data-theme="dark"] {
-  --paper: #1a1813;
-  --paper-deep: #23201a;
-  --ink: #ece7db;
-  --ink-soft: #9a927f;
-  --accent: #e0693f;
-  --accent-soft: #e0693f26;
-  --line: rgba(236, 231, 219, 0.16);
-  --line-strong: rgba(236, 231, 219, 0.5);
-  --shift-color: #060504;
+  --paper: #121214;
+  --paper-deep: #1b1b1e;
+  --ink: #f5f5f7;
+  --ink-soft: #86868b;
+  --accent: #2997ff;
+  --accent-soft: #2997ff26;
+  --line: rgba(245, 245, 247, 0.15);
+  --line-strong: rgba(245, 245, 247, 0.45);
+  --shift-color: #000000;
   --shift-max: 0.55;
 }
 
@@ -51,8 +51,8 @@ html[data-mode="anime"] {
   --paper-deep: #c4ddf5;
   --ink: #0e2a4a;
   --ink-soft: #40628b;
-  --accent: #ff4f79;
-  --accent-soft: #ff4f7926;
+  --accent: #dc3a22;
+  --accent-soft: #dc3a2226;
   --line: rgba(14, 42, 74, 0.2);
   --line-strong: rgba(14, 42, 74, 0.55);
   --halftone-alpha: 0.5;
@@ -69,8 +69,8 @@ html[data-mode="anime"][data-theme="dark"] {
   --paper-deep: #142238;
   --ink: #dcebfb;
   --ink-soft: #8fb0d8;
-  --accent: #ff6b8f;
-  --accent-soft: #ff6b8f26;
+  --accent: #ff5f45;
+  --accent-soft: #ff5f4526;
   --line: rgba(220, 235, 251, 0.18);
   --line-strong: rgba(220, 235, 251, 0.5);
   --halftone-alpha: 0.4;
@@ -297,8 +297,8 @@ html[data-theme="dark"] .grain {
   position: fixed;
   inset: 0;
   z-index: 90;
-  background: #181712;
-  color: #f2efe8;
+  background: #131316;
+  color: #f5f5f7;
   display: grid;
   place-items: center;
   transition: clip-path 0.8s var(--ease-snap);
@@ -907,6 +907,19 @@ html[data-mode="anime"] .portrait-mode--anime {
   font-style: normal;
   font-size: 0.8em;
   color: var(--accent);
+}
+
+/* separator follows the world: minimal geometry IRL, komejirushi in anime */
+.marquee-track i::before {
+  content: "◆";
+  font-size: 0.55em;
+  vertical-align: middle;
+}
+
+html[data-mode="anime"] .marquee-track i::before {
+  content: "※";
+  font-family: var(--font-jp);
+  font-size: 1em;
 }
 
 @keyframes marquee {
