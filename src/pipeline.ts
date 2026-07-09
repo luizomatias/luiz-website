@@ -67,7 +67,7 @@ export function initPipeline(): void {
   let modelW = 0
 
   const layout = () => {
-    cx = w * 0.62
+    cx = w * 0.56
     gateY = h * 0.26
     gateHalf = w * 0.09
     embedTop = h * 0.32
@@ -138,10 +138,94 @@ export function initPipeline(): void {
     }
   }
 
+  // ---- pointer: the cursor feeds the pipeline ----
+  let px = -1000
+  let py = -1000
+  let pointerIn = false
+  let lastFeedX = 0
+  let lastFeedY = 0
+  let feedClock = 0
+
+  const feed = () => {
+    if (parts.length > 130) return
+    const jx = px + (Math.random() - 0.5) * 14
+    if (py < gateY - 12) {
+      // raw zone: drop noisy data right at the cursor
+      const p = {
+        phase: 'raw' as Phase,
+        x: jx,
+        y: py,
+        xt:
+          Math.random() > 0.16
+            ? cx + (Math.random() - 0.5) * gateHalf * 1.7
+            : cx + (Math.random() < 0.5 ? -1 : 1) * (gateHalf + 8 + Math.random() * w * 0.14),
+        col: 0,
+        seed: Math.random() * Math.PI * 2,
+        size: 1.6 + Math.random() * 0.9,
+        alpha: 0.85,
+        t: 0,
+      }
+      parts.push(p)
+    } else if (py < modelTop - 10) {
+      // embedding zone: data joins the nearest dimension
+      let best = 0
+      for (let c = 1; c < cols.length; c++) {
+        if (Math.abs(cols[c] - jx) < Math.abs(cols[best] - jx)) best = c
+      }
+      parts.push({
+        phase: 'embed',
+        x: jx,
+        y: Math.max(py, gateY + 6),
+        xt: jx,
+        col: best,
+        seed: Math.random() * Math.PI * 2,
+        size: 1.9,
+        alpha: 0.9,
+        t: 0,
+      })
+    } else if (py < modelBot + 10) {
+      // straight into the model
+      parts.push({
+        phase: 'model',
+        x: jx,
+        y: py,
+        xt: jx,
+        col: 0,
+        seed: Math.random() * Math.PI * 2,
+        size: 2,
+        alpha: 0.9,
+        t: 0,
+      })
+    }
+  }
+
+  const stageAt = (y: number): number =>
+    y < gateY ? 0 : y < embedTop ? 1 : y < modelTop ? 2 : y < modelBot ? 3 : 4
+
+  const labels = Array.from(
+    host.querySelectorAll<HTMLElement>('.pipeline-labels li'),
+  )
+
+  const highlight = (idx: number) => {
+    labels.forEach((l, i) => l.classList.toggle('is-active', i === idx))
+  }
+
   const step = (dt: number, now: number) => {
     // population control
     const rawCount = parts.filter((p) => p.phase === 'raw').length
     if (rawCount < 16 && Math.random() < dt * 14) spawnRaw()
+
+    // cursor feeding: sow while the pointer moves
+    feedClock += dt
+    if (pointerIn && feedClock > 0.07) {
+      const moved = Math.hypot(px - lastFeedX, py - lastFeedY)
+      if (moved > 5) {
+        feedClock = 0
+        lastFeedX = px
+        lastFeedY = py
+        feed()
+      }
+    }
 
     emitClock += dt
     if (emitClock > 0.48 && bank > 0) {
@@ -165,6 +249,20 @@ export function initPipeline(): void {
 
     for (let i = parts.length - 1; i >= 0; i--) {
       const p = parts[i]
+
+      // particles shy away from the cursor
+      if (pointerIn && (p.phase === 'raw' || p.phase === 'embed')) {
+        const dx = p.x - px
+        const dy = p.y - py
+        const d2 = dx * dx + dy * dy
+        if (d2 < 1600 && d2 > 0.01) {
+          const d = Math.sqrt(d2)
+          const f = ((40 - d) / 40) * 90 * dt
+          p.x += (dx / d) * f
+          p.y += (dy / d) * f * 0.35
+        }
+      }
+
       switch (p.phase) {
         case 'raw': {
           const near = Math.min(1, Math.max(0, 1 - (gateY - p.y) / (h * 0.2)))
@@ -312,15 +410,66 @@ export function initPipeline(): void {
     ctx.fill()
   }
 
-  const drawParticles = () => {
+  /** Each stage refines the data — and its shape:
+   *  raw/reject: irregular tumbling specks · embed: squares aligning to the
+   *  grid · model: squares spinning in · out/fly: clean glowing pulses. */
+  const drawParticles = (now: number) => {
     for (const p of parts) {
-      const isAccent = p.phase === 'reject' || p.phase === 'out' || p.phase === 'fly'
-      const alpha =
-        p.phase === 'fly' ? 0.9 : p.phase === 'out' ? 1 : Math.min(1, p.alpha)
-      ctx.fillStyle = css(isAccent ? accent : ink, alpha)
-      ctx.beginPath()
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-      ctx.fill()
+      switch (p.phase) {
+        case 'raw':
+        case 'reject': {
+          ctx.fillStyle = css(p.phase === 'reject' ? accent : ink, Math.min(1, p.alpha))
+          ctx.save()
+          ctx.translate(p.x, p.y)
+          ctx.rotate(p.seed + now * 0.0016)
+          const s = p.size
+          ctx.fillRect(-s, -s * 0.7, s * 2, s * 1.4)
+          ctx.restore()
+          break
+        }
+        case 'embed': {
+          // rotation settles to 0 as the point locks onto its dimension
+          const off = Math.min(1, Math.abs(p.x - cols[p.col]) / 24)
+          ctx.fillStyle = css(ink, 0.9)
+          ctx.save()
+          ctx.translate(p.x, p.y)
+          ctx.rotate((p.seed + now * 0.0016) * off)
+          const s = p.size + 0.5
+          ctx.fillRect(-s, -s, s * 2, s * 2)
+          ctx.restore()
+          break
+        }
+        case 'model': {
+          ctx.fillStyle = css(ink, 0.9)
+          ctx.save()
+          ctx.translate(p.x, p.y)
+          ctx.rotate(now * 0.008 + p.seed)
+          const s = Math.max(0.5, p.size)
+          ctx.fillRect(-s, -s, s * 2, s * 2)
+          ctx.restore()
+          break
+        }
+        case 'out':
+        case 'fly': {
+          // halo + trail: refined signal
+          ctx.fillStyle = css(accent, 0.14)
+          ctx.beginPath()
+          ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2)
+          ctx.fill()
+          if (p.phase === 'out') {
+            ctx.strokeStyle = css(accent, 0.3)
+            ctx.beginPath()
+            ctx.moveTo(p.x, p.y - 13)
+            ctx.lineTo(p.x, p.y - 4)
+            ctx.stroke()
+          }
+          ctx.fillStyle = css(accent, 1)
+          ctx.beginPath()
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+          ctx.fill()
+          break
+        }
+      }
     }
   }
 
@@ -337,7 +486,7 @@ export function initPipeline(): void {
     ctx.clearRect(0, 0, w, h)
     step(dt, now)
     drawStructure(now)
-    drawParticles()
+    drawParticles(now)
     if (running && !document.hidden) raf = requestAnimationFrame(frame)
   }
 
@@ -407,4 +556,20 @@ export function initPipeline(): void {
   ).observe(host)
 
   document.addEventListener('visibilitychange', start)
+
+  // pointer: feed the flywheel, light the stage label
+  host.addEventListener('pointermove', (e) => {
+    const r = canvas.getBoundingClientRect()
+    px = e.clientX - r.left
+    py = e.clientY - r.top
+    pointerIn = true
+    highlight(stageAt(py))
+  })
+
+  host.addEventListener('pointerleave', () => {
+    pointerIn = false
+    px = -1000
+    py = -1000
+    highlight(-1)
+  })
 }
