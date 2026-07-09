@@ -12,6 +12,7 @@ import { initTimeline } from './timeline'
 import { initVelocity } from './velocity'
 import { initSmoothScroll } from './smoothscroll'
 import { initLede } from './lede'
+import { initPipeline } from './pipeline'
 import { initAmbient } from './ambient'
 import { initScramble } from './scramble'
 
@@ -30,3 +31,4 @@ initTimeline()
 initVelocity()
 initSmoothScroll()
 initLede()
+initPipeline()
