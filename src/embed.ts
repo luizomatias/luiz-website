@@ -150,13 +150,14 @@ export function initEmbed(): void {
     const k = Math.max(1, Math.ceil(raw.length / CAP))
     pts = raw.filter((_, i) => i % k === 0)
 
-    // latent-space targets: one cluster per word, ring-ish in 3D
+    // latent-space targets: one cluster per word, ring-ish in 3D.
+    // Anchor the cloud to the title's own box — the space the name vacated —
+    // so it composes on any viewport instead of drifting over other content.
     const words = word + 1
-    // the full cloud spans ~3× this radius once sigma and perspective pile on,
-    // so keep it modest: it should hover over the title area, not the page
-    R = Math.min(cw * 0.15, ch * 0.19, 200)
-    cx0 = cw * 0.3
-    cy0 = ch * 0.44
+    const tr = title.getBoundingClientRect()
+    R = Math.min(tr.width * 0.38, cw * 0.28, 200)
+    cx0 = tr.left - heroR.left + tr.width / 2
+    cy0 = tr.top - heroR.top + tr.height / 2
     const sigma = R * 0.28
     for (const p of pts) {
       const a = (p.w / words) * Math.PI * 2 + 0.7
@@ -331,8 +332,9 @@ export function initEmbed(): void {
       ctx.fillRect(q.x - size / 2, q.y - size / 2, size, size)
     }
 
-    // caption, tucked under the cloud
-    if (phase === 'on') {
+    // caption, tucked under the cloud (wide screens only — on touch the
+    // DECODE chip explains itself and there is no esc key)
+    if (phase === 'on' && cw > 640) {
       ctx.globalAlpha = 0.55
       ctx.fillStyle = soft
       ctx.font = '10px "IBM Plex Mono", monospace'
