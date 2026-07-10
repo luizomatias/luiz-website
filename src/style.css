@@ -290,6 +290,68 @@ html[data-theme="dark"] .grain {
   .cursor.is-hidden {
     opacity: 0;
   }
+
+  /* ink trail — the canvas only paints in the anime world (see cursor.ts) */
+  .cursor-trail {
+    display: block;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 99;
+    pointer-events: none;
+  }
+
+  /* reticle: hidden in IRL, a spinning targeting sight in anime */
+  .cursor-reticle {
+    display: none;
+  }
+
+  html[data-mode="anime"] .cursor-ring {
+    border-color: transparent;
+  }
+
+  html[data-mode="anime"] .cursor-reticle {
+    display: block;
+    position: absolute;
+    inset: -1px;
+    border: 1px dashed var(--accent);
+    border-radius: 50%;
+    animation: reticle-spin 5s linear infinite;
+  }
+
+  html[data-mode="anime"] .cursor-reticle::before,
+  html[data-mode="anime"] .cursor-reticle::after {
+    content: "";
+    position: absolute;
+    background: var(--accent);
+  }
+
+  html[data-mode="anime"] .cursor-reticle::before {
+    top: 50%;
+    left: -7px;
+    right: -7px;
+    height: 1px;
+    margin-top: -0.5px;
+  }
+
+  html[data-mode="anime"] .cursor-reticle::after {
+    left: 50%;
+    top: -7px;
+    bottom: -7px;
+    width: 1px;
+    margin-left: -0.5px;
+  }
+
+  @keyframes reticle-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+.cursor-trail {
+  display: none;
 }
 
 /* ---------- preloader ---------- */
@@ -474,6 +536,50 @@ html[data-theme="dark"][data-mode="anime"] .nav {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+/* soft accent light that slowly breathes behind the hero — barely-there
+   on paper, warmer in the anime world (it rides on --accent-soft) */
+.hero-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero-glow::before {
+  content: "";
+  position: absolute;
+  top: -25%;
+  right: -12%;
+  width: 62vmax;
+  height: 62vmax;
+  background: radial-gradient(circle at center, var(--accent-soft) 0%, transparent 60%);
+  filter: blur(6px);
+  animation: hero-breathe 12s var(--ease-out) infinite;
+}
+
+@keyframes hero-breathe {
+  0%,
+  100% {
+    transform: scale(0.9) translateY(0);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.08) translateY(-2%);
+    opacity: 0.9;
+  }
+}
+
+.hero-grid,
+.hero-foot {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-vertical {
+  z-index: 1;
 }
 
 .hero-grid {
@@ -687,6 +793,7 @@ body.is-loaded .hero-line .char {
   width: min(100%, 420px);
   cursor: pointer;
   outline: none;
+  perspective: 900px;
 }
 
 @media (max-width: 900px) {
@@ -699,8 +806,10 @@ body.is-loaded .hero-line .char {
   overflow: hidden;
   border: 1px solid var(--line-strong);
   background: var(--paper-deep);
-  transform: rotate(var(--tilt-r, 0deg)) translate(var(--tilt-x, 0px), var(--tilt-y, 0px));
-  transition: box-shadow 0.4s;
+  /* 3D tilt toward the cursor, like a photo held in hand (set in portrait.ts) */
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
+    translate(var(--tilt-x, 0px), var(--tilt-y, 0px));
+  transition: box-shadow 0.4s, transform 0.18s ease-out;
 }
 
 .portrait:focus-visible .portrait-frame {
@@ -1253,6 +1362,13 @@ html[data-mode="anime"] .marquee-track i::before {
   align-content: start;
 }
 
+.job-company-line {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
 .job-company {
   font-family: var(--font-display);
   font-weight: 400;
@@ -1264,6 +1380,32 @@ html[data-mode="anime"] .marquee-track i::before {
 .job:hover .job-company {
   transform: translateX(0.4rem);
   font-style: italic;
+}
+
+/* little country chips — where the work happened, and in which language */
+.job-flags {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: transform 0.4s var(--ease-out);
+}
+
+.job:hover .job-flags {
+  transform: translateX(0.4rem);
+}
+
+.job-flag {
+  display: block;
+  width: 26px;
+  height: 18px;
+  border-radius: 2.5px;
+  overflow: hidden;
+  flex: none;
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.18), 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+html[data-theme="dark"] .job-flag {
+  box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.28), 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .job-meta {
@@ -1475,15 +1617,38 @@ html[data-mode="anime"] .marquee-track i::before {
   transform: none;
 }
 
+/* printed-line reveal: the inner span is wiped up from the bottom edge,
+   like ink pressed onto the page. The observed element itself keeps a normal
+   box (only its overflow is clipped) so IntersectionObserver still fires —
+   a clip-path on the element zeroes its intersection ratio and never reveals. */
+.reveal-mask {
+  overflow: hidden;
+  transform: none;
+}
+
+.reveal-mask > span {
+  display: block;
+  transform: translateY(105%);
+  transition: transform 0.95s var(--ease-out);
+  transition-delay: calc(var(--reveal-i, 0) * 90ms);
+}
+
+.reveal-mask.is-in > span {
+  transform: translateY(0);
+}
+
 /* ---------- reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 
   .hero-line .char,
-  .reveal {
+  .reveal,
+  .reveal-mask,
+  .reveal-mask > span {
     transition: none;
     transform: none;
     opacity: 1;
+    clip-path: none;
   }
 
   .marquee-track,
@@ -1492,6 +1657,8 @@ html[data-mode="anime"] .marquee-track i::before {
   .hero-scroll-line,
   .hero-eyebrow-dot,
   .preloader-jp,
+  .hero-glow::before,
+  .cursor-reticle,
   ::view-transition-new(root),
   .portrait.is-bursting .portrait-pow,
   .hero-line .char.char-wave {

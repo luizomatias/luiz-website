@@ -40,9 +40,13 @@
     <canvas class="ambient" aria-hidden="true"></canvas>
     <div class="progress" aria-hidden="true"></div>
 
+    <canvas class="cursor-trail" aria-hidden="true"></canvas>
     <div class="cursor" aria-hidden="true">
       <div class="cursor-dot"></div>
-      <div class="cursor-ring"><span class="cursor-label"></span></div>
+      <div class="cursor-ring">
+        <span class="cursor-reticle"></span>
+        <span class="cursor-label"></span>
+      </div>
     </div>
 
     <div class="preloader" aria-hidden="true">
@@ -51,6 +55,38 @@
         <span class="preloader-name">Luiz Otávio</span>
       </div>
     </div>
+
+    <!-- flag sprite (referenced by <use> in the Experience section) -->
+    <svg width="0" height="0" class="flag-sprite" aria-hidden="true" focusable="false">
+      <symbol id="flag-us" viewBox="0 0 26 18">
+        <rect width="26" height="18" fill="#b22234" />
+        <g fill="#fff">
+          <rect y="1.385" width="26" height="1.385" />
+          <rect y="4.154" width="26" height="1.385" />
+          <rect y="6.923" width="26" height="1.385" />
+          <rect y="9.692" width="26" height="1.385" />
+          <rect y="12.462" width="26" height="1.385" />
+          <rect y="15.231" width="26" height="1.385" />
+        </g>
+        <rect width="10.4" height="9.692" fill="#3c3b6e" />
+        <g fill="#fff">
+          <circle cx="2.2" cy="2.1" r="0.62" /><circle cx="5.2" cy="2.1" r="0.62" /><circle cx="8.2" cy="2.1" r="0.62" />
+          <circle cx="3.7" cy="4.8" r="0.62" /><circle cx="6.7" cy="4.8" r="0.62" />
+          <circle cx="2.2" cy="7.5" r="0.62" /><circle cx="5.2" cy="7.5" r="0.62" /><circle cx="8.2" cy="7.5" r="0.62" />
+        </g>
+      </symbol>
+      <symbol id="flag-br" viewBox="0 0 26 18">
+        <rect width="26" height="18" fill="#009c3b" />
+        <polygon points="13,2 24,9 13,16 2,9" fill="#ffdf00" />
+        <circle cx="13" cy="9" r="3.7" fill="#002776" />
+      </symbol>
+      <symbol id="flag-ar" viewBox="0 0 26 18">
+        <rect width="26" height="6" fill="#74acdf" />
+        <rect y="6" width="26" height="6" fill="#fff" />
+        <rect y="12" width="26" height="6" fill="#74acdf" />
+        <circle cx="13" cy="9" r="2" fill="#f6b40e" />
+      </symbol>
+    </svg>
 
     <header class="nav">
       <a class="nav-logo" href="#top" data-magnetic>
@@ -79,6 +115,7 @@
     <main id="top">
       <!-- ============ HERO ============ -->
       <section class="hero">
+        <div class="hero-glow" aria-hidden="true"></div>
         <div class="hero-grid">
           <div class="hero-text">
             <p class="hero-eyebrow mono reveal">
@@ -90,10 +127,10 @@
               <span class="hero-line" data-split>Otávio</span>
               <span class="hero-line hero-line--serif"><em data-split>Matias da Luz</em></span>
             </h1>
-            <p class="hero-tag reveal">
-              I design and operate <strong>production ML systems</strong> end-to-end —
+            <p class="hero-tag reveal reveal-mask">
+              <span>I design and operate <strong>production ML systems</strong> end-to-end —
               from data pipelines over billions of records to models people
-              actually use.
+              actually use.</span>
             </p>
             <div class="hero-cta reveal">
               <a class="btn" href="mailto:luizomatias2@gmail.com" data-magnetic data-cursor="EMAIL">
@@ -165,7 +202,7 @@
       <section class="section about" id="about">
         <header class="section-head">
           <span class="section-index mono">01</span>
-          <h2 class="section-title">About</h2>
+          <h2 class="section-title reveal reveal-mask"><span>About</span></h2>
           <span class="section-jp mono" aria-hidden="true">自己紹介</span>
         </header>
         <div class="about-body">
@@ -221,14 +258,19 @@
       <section class="section experience" id="experience">
         <header class="section-head">
           <span class="section-index mono">02</span>
-          <h2 class="section-title">Experience</h2>
+          <h2 class="section-title reveal reveal-mask"><span>Experience</span></h2>
           <span class="section-jp mono" aria-hidden="true">経歴</span>
         </header>
 
         <ol class="jobs">
           <li class="job reveal">
             <div class="job-top">
-              <h3 class="job-company" data-scramble>Starday Foods</h3>
+              <div class="job-company-line">
+                <h3 class="job-company" data-scramble>Starday Foods</h3>
+                <span class="job-flags">
+                  <svg class="job-flag" viewBox="0 0 26 18" role="img" aria-label="United States — English"><title>United States · English</title><use href="#flag-us" /></svg>
+                </span>
+              </div>
               <div class="job-meta">
                 <span class="job-role">AI &amp; Data Science Tech Lead</span>
                 <span class="job-period mono">APR 2025 — NOW</span>
@@ -244,7 +286,13 @@
 
           <li class="job reveal">
             <div class="job-top">
-              <h3 class="job-company" data-scramble>Mercado Libre</h3>
+              <div class="job-company-line">
+                <h3 class="job-company" data-scramble>Mercado Libre</h3>
+                <span class="job-flags">
+                  <svg class="job-flag" viewBox="0 0 26 18" role="img" aria-label="Argentina — Español"><title>Argentina · Español</title><use href="#flag-ar" /></svg>
+                  <svg class="job-flag" viewBox="0 0 26 18" role="img" aria-label="Brazil — Português"><title>Brasil · Português</title><use href="#flag-br" /></svg>
+                </span>
+              </div>
               <div class="job-meta">
                 <span class="job-role">Senior ML Engineer — Engineering Research</span>
                 <span class="job-period mono">OCT 2022 — APR 2025</span>
@@ -260,7 +308,12 @@
 
           <li class="job reveal">
             <div class="job-top">
-              <h3 class="job-company" data-scramble>Inter</h3>
+              <div class="job-company-line">
+                <h3 class="job-company" data-scramble>Inter</h3>
+                <span class="job-flags">
+                  <svg class="job-flag" viewBox="0 0 26 18" role="img" aria-label="Brazil — Português"><title>Brasil · Português</title><use href="#flag-br" /></svg>
+                </span>
+              </div>
               <div class="job-meta">
                 <span class="job-role">Data Scientist / ML Engineer</span>
                 <span class="job-period mono">APR 2021 — OCT 2022</span>
@@ -275,7 +328,12 @@
 
           <li class="job reveal">
             <div class="job-top">
-              <h3 class="job-company" data-scramble>Sympla</h3>
+              <div class="job-company-line">
+                <h3 class="job-company" data-scramble>Sympla</h3>
+                <span class="job-flags">
+                  <svg class="job-flag" viewBox="0 0 26 18" role="img" aria-label="Brazil — Português"><title>Brasil · Português</title><use href="#flag-br" /></svg>
+                </span>
+              </div>
               <div class="job-meta">
                 <span class="job-role">Data Scientist</span>
                 <span class="job-period mono">FEB 2020 — APR 2021</span>
@@ -293,7 +351,7 @@
       <section class="section stack" id="stack">
         <header class="section-head">
           <span class="section-index mono">03</span>
-          <h2 class="section-title">Stack</h2>
+          <h2 class="section-title reveal reveal-mask"><span>Stack</span></h2>
           <span class="section-jp mono" aria-hidden="true">道具箱</span>
         </header>
         <div class="stack-marquees reveal" aria-label="Technologies">
@@ -343,7 +401,7 @@
     <footer class="footer" id="contact">
       <header class="section-head">
         <span class="section-index mono">04</span>
-        <h2 class="section-title">Contact</h2>
+        <h2 class="section-title reveal reveal-mask"><span>Contact</span></h2>
         <span class="section-jp mono" aria-hidden="true">連絡</span>
       </header>
       <p class="footer-lede reveal">Have data? I'll make it <em>learn</em>.</p>

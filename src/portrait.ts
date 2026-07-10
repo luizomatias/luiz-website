@@ -26,18 +26,24 @@ export function initPortrait(): void {
       frame.style.setProperty('--lens-y', `${y.toFixed(2)}%`)
       frame.style.setProperty('--lens-r', '19%')
 
-      // subtle tilt toward the cursor
-      const tx = ((e.clientX - r.left) / r.width - 0.5) * 6
-      const ty = ((e.clientY - r.top) / r.height - 0.5) * 6
-      frame.style.setProperty('--tilt-r', `${(tx * 0.25).toFixed(2)}deg`)
-      frame.style.setProperty('--tilt-x', `${tx.toFixed(1)}px`)
-      frame.style.setProperty('--tilt-y', `${ty.toFixed(1)}px`)
+      // 3D tilt toward the cursor — like a photo held in hand.
+      // A touch more pronounced in the anime world (cel feel).
+      if (!reduced) {
+        const px = (e.clientX - r.left) / r.width
+        const py = (e.clientY - r.top) / r.height
+        const max = root.dataset.mode === 'anime' ? 7 : 4.5
+        frame.style.setProperty('--ry', `${((px - 0.5) * max).toFixed(2)}deg`)
+        frame.style.setProperty('--rx', `${((0.5 - py) * max).toFixed(2)}deg`)
+        frame.style.setProperty('--tilt-x', `${((px - 0.5) * 6).toFixed(1)}px`)
+        frame.style.setProperty('--tilt-y', `${((py - 0.5) * 6).toFixed(1)}px`)
+      }
     })
 
     portrait.addEventListener('mouseleave', () => {
       portrait.classList.remove('is-lensing')
       frame.style.setProperty('--lens-r', '0%')
-      frame.style.setProperty('--tilt-r', '0deg')
+      frame.style.setProperty('--rx', '0deg')
+      frame.style.setProperty('--ry', '0deg')
       frame.style.setProperty('--tilt-x', '0px')
       frame.style.setProperty('--tilt-y', '0px')
     })
