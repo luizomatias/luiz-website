@@ -619,6 +619,78 @@ html[data-theme="dark"][data-mode="anime"] .nav {
   letter-spacing: -0.03em;
   text-transform: uppercase;
   margin-bottom: clamp(1.2rem, 3.5vh, 2.4rem);
+  transition: opacity 0.45s var(--ease-out);
+}
+
+/* ---------- EMBED → R³: the name as a latent-space point cloud ---------- */
+.embed-canvas {
+  position: absolute;
+  inset: 0;
+  /* canvas is a replaced element: inset alone won't size it */
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.embed-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: -0.2rem 0 1.4rem;
+  padding: 0.55rem 1.05rem;
+  background: none;
+  border: 1px dashed var(--line-strong);
+  border-radius: 999px;
+  color: var(--ink);
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: color 0.25s, border-color 0.25s, background-color 0.25s;
+}
+
+/* little live dot: this thing is on and waiting to be pressed */
+.embed-toggle::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+.embed-toggle:hover,
+.embed-toggle:focus-visible {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.embed-toggle:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.hero.is-embedded .hero-title {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hero.is-embedded {
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.hero.is-embedded.is-dragging {
+  cursor: grabbing;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .embed-toggle,
+  .embed-canvas {
+    display: none;
+  }
 }
 
 .hero-line {
@@ -1529,6 +1601,43 @@ html[data-theme="dark"] .job-flag {
   padding: clamp(5rem, 12vh, 9rem) var(--gutter) 2rem;
   position: relative;
   z-index: 1;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: center;
+}
+
+/* the globe that always comes home */
+.globe {
+  justify-self: center;
+  width: min(100%, 460px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.globe.is-dragging {
+  cursor: grabbing;
+}
+
+.globe-canvas {
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .globe {
+    width: min(100%, 340px);
+    margin-top: 1rem;
+  }
 }
 
 .footer-lede {

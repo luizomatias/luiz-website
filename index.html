@@ -116,6 +116,7 @@
       <!-- ============ HERO ============ -->
       <section class="hero">
         <div class="hero-glow" aria-hidden="true"></div>
+        <canvas class="embed-canvas" aria-hidden="true"></canvas>
         <div class="hero-grid">
           <div class="hero-text">
             <p class="hero-eyebrow mono reveal">
@@ -127,6 +128,8 @@
               <span class="hero-line" data-split>Otávio</span>
               <span class="hero-line hero-line--serif"><em data-split>Matias da Luz</em></span>
             </h1>
+            <button class="embed-toggle mono" id="embed-toggle" type="button"
+                    data-cursor="LATENT" aria-label="Dissolve the name into a 3D embedding">EMBED THE NAME → R³</button>
             <p class="hero-tag reveal reveal-mask">
               <span>I design and operate <strong>production ML systems</strong> end-to-end —
               from data pipelines over billions of records to models people
@@ -320,7 +323,7 @@
               </div>
             </div>
             <ul class="job-points">
-              <li>Predicted customers' invested assets with deep learning on tabular data — R$15M revenue within a month, validated by A/B tests.</li>
+              <li>Predicted customers' invested assets with deep learning on tabular data — US$3M revenue, validated by A/B tests.</li>
               <li>Matched customer complaints to the best representatives using NLP — the company's best reputation score in 3 years.</li>
               <li>Customer segmentation on an Airflow batch job — +10% customer conversion above target.</li>
             </ul>
@@ -404,15 +407,22 @@
         <h2 class="section-title reveal reveal-mask"><span>Contact</span></h2>
         <span class="section-jp mono" aria-hidden="true">連絡</span>
       </header>
-      <p class="footer-lede reveal">Have data? I'll make it <em>learn</em>.</p>
-      <a class="footer-email reveal" href="mailto:luizomatias2@gmail.com" data-magnetic data-cursor="SAY HI">
-        <span data-split-hover>luizomatias2@gmail.com</span>
-      </a>
-      <div class="footer-links reveal">
-        <a href="https://www.linkedin.com/in/luizotaviomatiasdaluz/" target="_blank" rel="noopener" data-magnetic><span data-scramble>LinkedIn</span> ↗</a>
-        <a href="https://github.com/luizomatias" target="_blank" rel="noopener" data-magnetic><span data-scramble>GitHub</span> ↗</a>
-        <a href="https://www.youtube.com/@luizomatias" target="_blank" rel="noopener" data-magnetic><span data-scramble>YouTube</span> ↗</a>
-        <a href="mailto:luizomatias2@gmail.com" data-magnetic><span data-scramble>Email</span> ↗</a>
+      <div class="footer-grid">
+        <div class="footer-left">
+          <p class="footer-lede reveal">Have data? I'll make it <em>learn</em>.</p>
+          <a class="footer-email reveal" href="mailto:luizomatias2@gmail.com" data-magnetic data-cursor="SAY HI">
+            <span data-split-hover>luizomatias2@gmail.com</span>
+          </a>
+          <div class="footer-links reveal">
+            <a href="https://www.linkedin.com/in/luizotaviomatiasdaluz/" target="_blank" rel="noopener" data-magnetic><span data-scramble>LinkedIn</span> ↗</a>
+            <a href="https://github.com/luizomatias" target="_blank" rel="noopener" data-magnetic><span data-scramble>GitHub</span> ↗</a>
+            <a href="https://www.youtube.com/@luizomatias" target="_blank" rel="noopener" data-magnetic><span data-scramble>YouTube</span> ↗</a>
+            <a href="mailto:luizomatias2@gmail.com" data-magnetic><span data-scramble>Email</span> ↗</a>
+          </div>
+        </div>
+        <figure class="globe reveal" data-cursor="SPIN" aria-hidden="true">
+          <canvas class="globe-canvas"></canvas>
+        </figure>
       </div>
       <div class="footer-base mono">
         <span>© 2026 LUIZ OTÁVIO MATIAS DA LUZ</span>

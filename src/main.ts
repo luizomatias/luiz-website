@@ -15,6 +15,8 @@ import { initLede } from './lede'
 import { initPipeline } from './pipeline'
 import { initAmbient } from './ambient'
 import { initScramble } from './scramble'
+import { initEmbed } from './embed'
+import { initGlobe } from './globe'
 
 initTheme()
 initAmbient()
@@ -32,3 +34,5 @@ initVelocity()
 initSmoothScroll()
 initLede()
 initPipeline()
+initEmbed()
+initGlobe()
