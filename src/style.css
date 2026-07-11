@@ -505,7 +505,8 @@ html[data-theme="dark"][data-mode="anime"] .nav {
   cursor: pointer;
   display: grid;
   place-items: center;
-  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s,
+    transform 0.16s var(--ease-out);
 }
 
 .theme-toggle:hover {
@@ -526,7 +527,8 @@ html[data-theme="dark"][data-mode="anime"] .nav {
   gap: 0.45rem;
   cursor: pointer;
   backdrop-filter: blur(12px);
-  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s,
+    transform 0.16s var(--ease-out);
 }
 
 .world-toggle:hover,
@@ -545,6 +547,17 @@ html[data-theme="dark"][data-mode="anime"] .nav {
   background: var(--paper);
   color: var(--ink);
   cursor: pointer;
+  transition: transform 0.16s var(--ease-out);
+}
+
+/* press feedback — the interface should feel like it heard the click */
+.theme-toggle:active,
+.world-toggle:active,
+.nav-menu-toggle:active,
+.embed-toggle:not(:disabled):active,
+.pipeline-tab:active,
+.btn:active {
+  transform: scale(0.96);
 }
 
 .theme-toggle-icon {
@@ -742,7 +755,8 @@ html[data-theme="dark"][data-mode="anime"] .nav {
   color: var(--ink);
   letter-spacing: 0.12em;
   cursor: pointer;
-  transition: color 0.25s, border-color 0.25s, background-color 0.25s;
+  transition: color 0.25s, border-color 0.25s, background-color 0.25s,
+    transform 0.16s var(--ease-out);
 }
 
 /* little live dot: this thing is on and waiting to be pressed */
@@ -863,7 +877,8 @@ body.is-loaded .hero-line .char {
   font-size: 0.95rem;
   position: relative;
   overflow: hidden;
-  transition: color 0.35s var(--ease-out), border-color var(--theme-fade);
+  transition: color 0.35s var(--ease-out), border-color var(--theme-fade),
+    transform 0.16s var(--ease-out);
 }
 
 .btn::before {
@@ -1122,7 +1137,9 @@ html[data-mode="anime"] .portrait-img--anime {
   border: 1px solid var(--line);
   border-radius: 999px;
   white-space: nowrap;
-  transition: all var(--theme-fade) var(--ease-snap);
+  transition: background-color var(--theme-fade) var(--ease-snap),
+    color var(--theme-fade) var(--ease-snap),
+    border-color var(--theme-fade) var(--ease-snap);
 }
 
 .portrait-mode--anime {
@@ -1307,7 +1324,8 @@ html[data-mode="anime"] .marquee-track i::before {
   background: transparent;
   color: var(--ink-soft);
   cursor: pointer;
-  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s,
+    transform 0.16s var(--ease-out);
 }
 
 .pipeline-tab.is-on {
