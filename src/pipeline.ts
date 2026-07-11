@@ -77,6 +77,8 @@ export function initPipeline(): void {
   let toolH = 0
   let toolYs: number[] = []
   let harness = { x0: 0, y0: 0, x1: 0, y1: 0 }
+  let guardY = 0
+  let guardHalf = 0
 
   const layout = () => {
     cx = w * 0.56
@@ -102,6 +104,8 @@ export function initPipeline(): void {
       x1: toolX + toolW / 2 + w * 0.035,
       y1: h * 0.64,
     }
+    guardY = h * 0.76
+    guardHalf = w * 0.05
   }
 
   // theme colors, lerped so world switches glide
@@ -168,17 +172,19 @@ export function initPipeline(): void {
   // ---- pointer: the cursor feeds the pipeline ----
   // ---- agent mode: task → LLM harness loop over tools → answer ----
   interface AgentP {
-    phase: 'task' | 'think' | 'toTool' | 'back' | 'answer'
+    phase: 'task' | 'think' | 'toTool' | 'back' | 'answer' | 'blocked'
     x: number
     y: number
     t: number
     tool: number
     loops: number
     seed: number
+    guarded: boolean
   }
 
   const agents: AgentP[] = []
   let llmPulse = 0
+  let guardFlash = 0 // accent pulse when the guardrail blocks an answer
   const toolFlash = [0, 0, 0]
   let taskClock = 0
   let hoveredTool = -1
@@ -194,6 +200,7 @@ export function initPipeline(): void {
       tool: 0,
       loops: 2 + Math.floor(Math.random() * 2),
       seed: Math.random() * Math.PI * 2,
+      guarded: false,
     })
   }
 
@@ -217,6 +224,7 @@ export function initPipeline(): void {
       spawnTask()
     }
     llmPulse = Math.max(0, llmPulse - dt * 2)
+    guardFlash = Math.max(0, guardFlash - dt * 2)
     for (let i = 0; i < 3; i++) toolFlash[i] = Math.max(0, toolFlash[i] - dt * 2.4)
 
     for (let i = pings.length - 1; i >= 0; i--) {
@@ -293,7 +301,23 @@ export function initPipeline(): void {
         }
         case 'answer': {
           a.y += h * 0.12 * dt
+          if (!a.guarded && a.y >= guardY) {
+            a.guarded = true
+            if (Math.random() < 0.18) {
+              a.phase = 'blocked'
+              a.t = 0
+              a.y = guardY - 2
+              guardFlash = 1
+            }
+          }
           if (a.y >= h * 0.97) agents.splice(i, 1)
+          break
+        }
+        case 'blocked': {
+          a.t += dt
+          a.x += (Math.sin(a.seed) < 0 ? -1 : 1) * w * 0.45 * dt
+          a.y -= h * 0.012 * dt
+          if (a.t >= 0.6) agents.splice(i, 1)
           break
         }
       }
@@ -376,6 +400,30 @@ export function initPipeline(): void {
     ctx.lineTo(ax, h * 0.97)
     ctx.stroke()
 
+    // guardrail: a gate on the way out — most answers pass, some don't
+    ctx.strokeStyle = css(ink, 0.45)
+    ctx.beginPath()
+    ctx.moveTo(w * 0.08, guardY)
+    ctx.lineTo(ax - guardHalf, guardY)
+    ctx.moveTo(ax + guardHalf, guardY)
+    ctx.lineTo(w * 0.98, guardY)
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.moveTo(ax - guardHalf, guardY - 5)
+    ctx.lineTo(ax - guardHalf, guardY + 5)
+    ctx.moveTo(ax + guardHalf, guardY - 5)
+    ctx.lineTo(ax + guardHalf, guardY + 5)
+    ctx.stroke()
+    if (guardFlash > 0) {
+      ctx.strokeStyle = css(accent, guardFlash * 0.8)
+      ctx.beginPath()
+      ctx.moveTo(w * 0.08, guardY)
+      ctx.lineTo(ax - guardHalf, guardY)
+      ctx.moveTo(ax + guardHalf, guardY)
+      ctx.lineTo(w * 0.98, guardY)
+      ctx.stroke()
+    }
+
     void now
   }
 
@@ -415,6 +463,16 @@ export function initPipeline(): void {
           ctx.beginPath()
           ctx.arc(a.x, a.y, 2.3, 0, Math.PI * 2)
           ctx.fill()
+          break
+        }
+        case 'blocked': {
+          // tumbles away along the rail and fades, like the ML rejects
+          ctx.fillStyle = css(accent, Math.max(0, 0.85 - a.t * 1.4))
+          ctx.save()
+          ctx.translate(a.x, a.y)
+          ctx.rotate(a.seed + now * 0.004)
+          ctx.fillRect(-1.9, -1.3, 3.8, 2.6)
+          ctx.restore()
           break
         }
         case 'think':
@@ -495,7 +553,8 @@ export function initPipeline(): void {
       if (y < harness.y0 * 0.85) return 0
       if (y < harness.y0) return 1
       if (y < harness.y1) return x > cx + w * 0.06 ? 3 : 2
-      return 4
+      if (y < guardY + h * 0.03) return 4
+      return 5
     }
     return y < gateY ? 0 : y < embedTop ? 1 : y < modelTop ? 2 : y < modelBot ? 3 : 4
   }
@@ -861,7 +920,8 @@ export function initPipeline(): void {
       [17, '02', 'HARNESS'],
       [40, '03', 'AGENT LOOP'],
       [57, '04', 'TOOLS · MCP'],
-      [84, '05', 'OUTPUT'],
+      [72, '05', 'GUARDRAILS'],
+      [86, '06', 'OUTPUT'],
     ],
   }
   const CAPTIONS = {
@@ -874,10 +934,16 @@ export function initPipeline(): void {
   const setMode = (m: 'ml' | 'agent') => {
     if (m === mode) return
     mode = m
-    tabs.forEach((b) => b.classList.toggle('is-on', b.dataset.pmode === m))
-    LABEL_SETS[m].forEach(([top, n, txt], i) => {
-      const li = labels[i]
-      if (!li) return
+    tabs.forEach((b) => {
+      const selected = b.dataset.pmode === m
+      b.classList.toggle('is-on', selected)
+      b.setAttribute('aria-pressed', String(selected))
+    })
+    labels.forEach((li, i) => {
+      const entry = LABEL_SETS[m][i]
+      li.style.display = entry ? '' : 'none'
+      if (!entry) return
+      const [top, n, txt] = entry
       li.style.top = `${top}%`
       li.innerHTML = `<sup>${n}</sup> ${txt}`
     })

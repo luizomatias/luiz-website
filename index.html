@@ -9,13 +9,13 @@
     <meta property="og:title" content="Luiz Otávio — AI/ML Engineer" />
     <meta property="og:description" content="Production ML systems end-to-end — data pipelines over billions of records, LLM pipelines, embeddings platforms. Two worlds, one engineer." />
     <meta property="og:url" content="https://luizomatias.github.io/luiz-website/" />
-    <meta property="og:image" content="https://luizomatias.github.io/luiz-website/og.png" />
+    <meta property="og:image" content="https://luizomatias.github.io/luiz-website/og-cinematic.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Luiz Otávio — AI/ML Engineer" />
     <meta name="twitter:description" content="Production ML systems end-to-end — data pipelines over billions of records, LLM pipelines, embeddings platforms." />
-    <meta name="twitter:image" content="https://luizomatias.github.io/luiz-website/og.png" />
+    <meta name="twitter:image" content="https://luizomatias.github.io/luiz-website/og-cinematic.png" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231D1D1F'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' fill='%23F5F5F7' text-anchor='middle' font-style='italic'%3ELz%3C/text%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -93,7 +93,7 @@
         <span class="nav-logo-mark">Lz</span>
         <span class="nav-logo-jp">ルイス</span>
       </a>
-      <nav class="nav-links" aria-label="Sections">
+      <nav class="nav-links" id="site-nav" aria-label="Sections">
         <a href="#about" data-magnetic><sup>01</sup> <span data-scramble>About</span></a>
         <a href="#experience" data-magnetic><sup>02</sup> <span data-scramble>Experience</span></a>
         <a href="#stack" data-magnetic><sup>03</sup> <span data-scramble>Stack</span></a>
@@ -105,9 +105,17 @@
           <span class="nav-meta-sep">/</span>
           <span>BELO HORIZONTE</span>
         </div>
+        <button class="world-toggle mono" id="world-toggle" type="button"
+                aria-label="Switch to the anime world" data-cursor="WORLD">
+          <span id="world-toggle-label">IRL</span><span aria-hidden="true">⇄</span>
+        </button>
         <button class="theme-toggle" id="theme-toggle" type="button"
                 aria-label="Switch to dark mode" data-cursor="THEME">
           <span class="theme-toggle-icon" aria-hidden="true">☾</span>
+        </button>
+        <button class="nav-menu-toggle mono" id="nav-menu-toggle" type="button"
+                aria-expanded="false" aria-controls="site-nav" aria-label="Open site index">
+          INDEX
         </button>
       </div>
     </header>
@@ -149,9 +157,9 @@
             <div class="portrait-corners" aria-hidden="true"></div>
             <span class="portrait-pow" aria-hidden="true">ドンッ!!</span>
             <div class="portrait-frame">
-              <img class="portrait-img portrait-img--real" src="/portrait-real.jpg"
+              <img class="portrait-img portrait-img--real" src="/portrait-real.webp"
                    alt="Luiz Otávio, photographed above Belo Horizonte" draggable="false" />
-              <img class="portrait-img portrait-img--anime" src="/portrait-anime.png"
+              <img class="portrait-img portrait-img--anime" src="/portrait-anime.webp"
                    alt="Luiz Otávio, redrawn as an anime character" draggable="false" />
               <svg class="portrait-burst" viewBox="0 0 200 200" aria-hidden="true">
                 <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
@@ -211,17 +219,15 @@
         <div class="about-body">
           <div class="about-text">
           <p class="about-lede">
-            AI/ML Engineer with a track record of building and operating
-            <em>production-grade ML systems</em> end-to-end — from data pipelines
-            to model deployment and evaluation.
+            I build machine-learning systems for the part
+            <em>after the demo</em> — when the data changes, the latency matters,
+            and someone has to trust the answer.
           </p>
           <p class="about-para reveal">
-            Currently leading large-scale AI systems at <strong>Starday Foods</strong>:
-            data platforms, LLM-based pipelines, and automated analysis workflows
-            over billions of records. My background spans multimodal systems,
-            embeddings platforms, and LLM applications at scale — with a strong focus
-            on operational ML, infrastructure, and building data flywheels that
-            continuously improve model performance.
+            I currently lead large-scale AI systems at <strong>Starday Foods</strong>:
+            data platforms, LLM pipelines, and automated analysis over billions of
+            records. The two worlds on this site mirror how I approach the work —
+            rigorous engineering underneath, expressive experiences on the surface.
           </p>
           <ul class="stats reveal-group">
             <li class="stat reveal">
@@ -239,20 +245,21 @@
           </ul>
           </div>
 
-          <aside class="pipeline" aria-hidden="true" data-cursor="FEED DATA">
+          <aside class="pipeline" aria-label="Interactive machine-learning and LLM pipeline visualization" data-cursor="FEED DATA">
             <div class="pipeline-tabs mono">
-              <button class="pipeline-tab is-on" data-pmode="ml" type="button" tabindex="-1">ML PIPELINE</button>
-              <button class="pipeline-tab" data-pmode="agent" type="button" tabindex="-1">LLM AGENT</button>
+              <button class="pipeline-tab is-on" data-pmode="ml" type="button" aria-pressed="true">ML PIPELINE</button>
+              <button class="pipeline-tab" data-pmode="agent" type="button" aria-pressed="false">LLM AGENT</button>
             </div>
-            <canvas class="pipeline-canvas"></canvas>
-            <ul class="pipeline-labels mono">
+            <canvas class="pipeline-canvas" aria-hidden="true"></canvas>
+            <ul class="pipeline-labels mono" aria-hidden="true">
               <li style="top: 5%"><sup>01</sup> RAW DATA</li>
               <li style="top: 23%"><sup>02</sup> PREPROCESS</li>
               <li style="top: 40%"><sup>03</sup> EMBEDDINGS</li>
               <li style="top: 60%"><sup>04</sup> MODEL</li>
               <li style="top: 84%"><sup>05</sup> DEPLOY</li>
+              <li style="top: 72%; display: none"><sup>05</sup> GUARDRAILS</li>
             </ul>
-            <span class="pipeline-caption mono">DATA FLYWHEEL — 弾み車</span>
+            <span class="pipeline-caption mono" aria-live="polite">DATA FLYWHEEL — 弾み車</span>
           </aside>
         </div>
       </section>

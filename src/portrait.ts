@@ -11,6 +11,8 @@ export function initPortrait(): void {
 
   const frame = portrait.querySelector<HTMLElement>('.portrait-frame')
   const modeNote = document.getElementById('mode-note')
+  const worldToggle = document.getElementById('world-toggle')
+  const worldToggleLabel = document.getElementById('world-toggle-label')
   const root = document.documentElement
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -66,6 +68,11 @@ export function initPortrait(): void {
     worldWipe(x, y, () => {
       root.dataset.mode = next
       if (modeNote) modeNote.textContent = next === 'anime' ? 'アニメ' : 'IRL'
+      if (worldToggleLabel) worldToggleLabel.textContent = next === 'anime' ? 'アニメ' : 'IRL'
+      worldToggle?.setAttribute(
+        'aria-label',
+        next === 'anime' ? 'Switch to the real world' : 'Switch to the anime world',
+      )
     })
 
     // let the lens rest so the full reveal reads from its last position
@@ -79,5 +86,10 @@ export function initPortrait(): void {
       const r = portrait.getBoundingClientRect()
       toggle(r.left + r.width / 2, r.top + r.height / 2)
     }
+  })
+
+  worldToggle?.addEventListener('click', () => {
+    const r = worldToggle.getBoundingClientRect()
+    toggle(r.left + r.width / 2, r.top + r.height / 2)
   })
 }

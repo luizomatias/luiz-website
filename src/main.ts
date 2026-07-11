@@ -17,6 +17,7 @@ import { initAmbient } from './ambient'
 import { initScramble } from './scramble'
 import { initEmbed } from './embed'
 import { initGlobe } from './globe'
+import { initNavigation } from './navigation'
 
 initTheme()
 initAmbient()
@@ -36,3 +37,4 @@ initLede()
 initPipeline()
 initEmbed()
 initGlobe()
+initNavigation()

@@ -59,8 +59,8 @@ export function initAmbient(): void {
   }
 
   const populate = () => {
-    const petalCount = Math.min(36, Math.round((w * h) / 46000))
-    const flyCount = Math.min(44, Math.round((w * h) / 36000))
+    const petalCount = Math.min(22, Math.round((w * h) / 70000))
+    const flyCount = Math.min(24, Math.round((w * h) / 68000))
 
     petals = Array.from({ length: petalCount }, () => spawnPetal(true))
     flies = Array.from({ length: flyCount }, () => ({
@@ -183,7 +183,7 @@ export function initAmbient(): void {
     const next = readMode()
     if (next === mode) return
     mode = next
-    canvas.style.opacity = mode === 'off' ? '0' : '1'
+    canvas.style.opacity = mode === 'off' ? '0' : '0.58'
     if (mode !== 'off' && !raf && !document.hidden) {
       last = performance.now()
       raf = requestAnimationFrame(tick)
