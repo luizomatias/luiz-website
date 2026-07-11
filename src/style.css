@@ -569,8 +569,12 @@ html[data-theme="dark"][data-mode="anime"] .nav {
     padding: 0.9rem var(--gutter);
   }
 
-  .nav-logo-jp,
-  .theme-toggle { display: none; }
+  .nav-logo-jp { display: none; }
+
+  .theme-toggle {
+    width: 32px;
+    height: 32px;
+  }
 
   .world-toggle {
     min-width: 62px;
