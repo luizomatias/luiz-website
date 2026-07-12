@@ -648,6 +648,12 @@ html[data-theme="dark"][data-mode="anime"] .nav {
   justify-content: space-between;
 }
 
+/* the 0×0 flag sprite is inline SVG — out of flow, or it opens an empty
+   24px line box that pushes the whole page down */
+.flag-sprite {
+  position: absolute;
+}
+
 /* domain-warped gradient flow, painted in WebGL (see heroShader.ts) —
    the backmost layer, ambient and quiet so the type stays readable */
 .hero-shader {
