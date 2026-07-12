@@ -90,6 +90,10 @@ html[data-mode="anime"][data-theme="dark"] {
 
 html {
   scroll-behavior: smooth;
+  /* iOS Safari lets touch pan into hidden overflow when only <body> clips —
+     clip on the root actually forbids horizontal panning (hidden = fallback) */
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -98,6 +102,7 @@ body {
   color: var(--ink);
   line-height: 1.5;
   overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   transition: background-color var(--theme-fade) var(--ease-snap),
     color var(--theme-fade) var(--ease-snap);
