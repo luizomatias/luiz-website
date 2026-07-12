@@ -648,6 +648,23 @@ html[data-theme="dark"][data-mode="anime"] .nav {
   justify-content: space-between;
 }
 
+/* domain-warped gradient flow, painted in WebGL (see heroShader.ts) —
+   the backmost layer, ambient and quiet so the type stays readable */
+.hero-shader {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  animation: hero-shader-in 1.4s var(--ease-out) 0.3s forwards;
+}
+
+@keyframes hero-shader-in {
+  to { opacity: 1; }
+}
+
 /* soft accent light that slowly breathes behind the hero — barely-there
    on paper, warmer in the anime world (it rides on --accent-soft) */
 .hero-glow {
@@ -1864,6 +1881,9 @@ html[data-theme="dark"] .job-flag {
 /* ---------- reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+
+  /* the shader renders one static frame — reveal it without the fade */
+  .hero-shader { opacity: 1; animation: none; }
 
   .hero-line .char,
   .reveal,

@@ -18,9 +18,11 @@ import { initScramble } from './scramble'
 import { initEmbed } from './embed'
 import { initGlobe } from './globe'
 import { initNavigation } from './navigation'
+import { initHeroShader } from './heroShader'
 
 initTheme()
 initAmbient()
+initHeroShader()
 initScramble()
 initPreloader()
 initHeroSplit()
