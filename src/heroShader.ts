@@ -155,8 +155,10 @@ export function initHeroShader(): void {
     tgtMode = root.dataset.mode === 'anime' ? 1 : 0
   }
 
-  const modeObs = new MutationObserver(refreshTargets)
-  modeObs.observe(root, { attributeFilter: ['data-mode', 'data-theme'] })
+  new MutationObserver(() => {
+    refreshTargets()
+    if (reduced) drawStill()
+  }).observe(root, { attributeFilter: ['data-mode', 'data-theme'] })
 
   // ---- sizing -------------------------------------------------------------
   let dpr = 1
@@ -168,21 +170,12 @@ export function initHeroShader(): void {
       canvas.width = w
       canvas.height = h
       gl.viewport(0, 0, w, h)
+      // resizing wipes the drawing buffer — repaint the still frame when
+      // no animation loop is around to do it on the next tick
+      if (reduced) drawStill()
     }
   }
-  const ro = new ResizeObserver(resize)
-  ro.observe(hero)
-  resize()
-
-  // ---- pause when the hero scrolls away -----------------------------------
-  let onScreen = true
-  new IntersectionObserver(
-    (entries) => {
-      onScreen = entries[0].isIntersecting
-      if (onScreen && !reduced) requestAnimationFrame(loop)
-    },
-    { threshold: 0 }
-  ).observe(hero)
+  new ResizeObserver(resize).observe(hero)
 
   const draw = (time: number) => {
     gl.uniform2f(uRes, canvas.width, canvas.height)
@@ -194,19 +187,20 @@ export function initHeroShader(): void {
     gl.drawArrays(gl.TRIANGLES, 0, 3)
   }
 
-  if (reduced) {
-    // one static frame — texture without motion
-    refreshTargets()
+  /** reduced-motion path: snap to targets and paint a single still frame */
+  const drawStill = () => {
     paper = tgtPaper
     ink = tgtInk
     accent = tgtAccent
     mode = tgtMode
     draw(0)
-    return
   }
 
   const loop = (now: number) => {
-    if (!onScreen) return
+    if (!onScreen) {
+      running = false
+      return
+    }
     // ease palette + mode toward their targets for a smooth world switch
     mode = lerp(mode, tgtMode, 0.05)
     paper = lerp3(paper, tgtPaper, 0.06)
@@ -215,5 +209,40 @@ export function initHeroShader(): void {
     draw(now * 0.001)
     requestAnimationFrame(loop)
   }
-  requestAnimationFrame(loop)
+
+  // single-flight guard: observers and init may all ask for the loop,
+  // but only one rAF chain must ever run
+  let running = false
+  let onScreen = true
+  const start = () => {
+    if (running || reduced) return
+    running = true
+    requestAnimationFrame(loop)
+  }
+
+  // pause when the hero scrolls away
+  new IntersectionObserver(
+    (entries) => {
+      onScreen = entries[0].isIntersecting
+      if (onScreen) start()
+    },
+    { threshold: 0 }
+  ).observe(hero)
+
+  // if the OS reclaims the GPU context, get out of the way — the CSS
+  // .hero-glow underneath keeps the hero alive
+  canvas.addEventListener('webglcontextlost', (e) => {
+    e.preventDefault()
+    canvas.style.display = 'none'
+  })
+  canvas.addEventListener('webglcontextrestored', () => {
+    canvas.style.display = ''
+    resize()
+    if (reduced) drawStill()
+    else start()
+  })
+
+  refreshTargets()
+  if (reduced) drawStill()
+  else start()
 }
