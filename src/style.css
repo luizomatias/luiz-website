@@ -659,10 +659,10 @@ html[data-theme="dark"][data-mode="anime"] .nav {
   pointer-events: none;
   opacity: 0;
   animation: hero-shader-in 1.4s var(--ease-out) 0.3s forwards;
-  /* dissolve into the page before the hero ends — no hard seam where
-     the flow stops and the plain paper begins */
-  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
+  /* fade in at the top and out at the bottom so the flow dissolves into the
+     page on both ends — no hard seam where the canvas edge meets plain paper */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 10%, #000 72%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 10%, #000 72%, transparent 100%);
 }
 
 @keyframes hero-shader-in {

@@ -138,7 +138,10 @@ export function initHeroShader(): void {
     lerp(a[2], b[2], t),
   ]
 
-  let paper = readVar('--paper-deep')
+  // base on --paper (the actual page background), NOT --paper-deep — otherwise
+  // the shader's flat areas are darker than the page and the canvas reads as a
+  // grey rectangle with a hard top edge
+  let paper = readVar('--paper')
   let ink = readVar('--ink')
   let accent = readVar('--accent')
   let tgtPaper = paper
@@ -149,7 +152,7 @@ export function initHeroShader(): void {
   let tgtMode = mode
 
   const refreshTargets = () => {
-    tgtPaper = readVar('--paper-deep')
+    tgtPaper = readVar('--paper')
     tgtInk = readVar('--ink')
     tgtAccent = readVar('--accent')
     tgtMode = root.dataset.mode === 'anime' ? 1 : 0
