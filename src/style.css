@@ -1220,18 +1220,18 @@ html[data-mode="anime"] .portrait-mode--anime {
   .portrait-hint--touch { display: inline; }
 }
 
-/* ---------- credits: cinematic domain sequence ---------- */
-/* opening-credits treatment for the domains: a sticky stage, one title
-   card at a time dissolving through as the scroll scrubs the sequence,
-   with a slow Ken Burns drift. In the anime world every card is
-   subtitled in Japanese, like a film print. */
-.credits {
-  height: 330vh;
+/* ---------- wheel: the domains as a 3D fan of plates ---------- */
+/* a coverflow arc: each domain is a small illustrated plate — hand-drawn
+   SVG diagrams in the site's ink — arranged around a cylinder that the
+   scroll rotates, so the plates sweep through the centre one by one
+   (see wheel.ts) */
+.wheel {
+  height: 300vh;
   position: relative;
   z-index: 1;
 }
 
-.credits-stage {
+.wheel-stage {
   position: sticky;
   top: 0;
   height: 100vh;
@@ -1239,99 +1239,97 @@ html[data-mode="anime"] .portrait-mode--anime {
   display: grid;
   place-items: center;
   overflow: hidden;
+  perspective: 1500px;
+  perspective-origin: 50% 42%;
 }
 
-.credits-card {
-  grid-area: 1 / 1;
-  text-align: center;
-  padding: 0 var(--gutter);
-  opacity: 0;
-  visibility: hidden;
+.wheel-track {
+  position: relative;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+}
+
+.wheel-card {
+  position: absolute;
+  width: clamp(150px, 17vw, 215px);
+  aspect-ratio: 3 / 4;
+  margin: 0;
+  padding: clamp(0.8rem, 1.4vw, 1.1rem);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: linear-gradient(165deg, var(--paper), var(--paper-deep));
+  box-shadow: 0 22px 44px -20px rgba(0, 0, 0, 0.22);
+  backface-visibility: hidden;
   will-change: transform, opacity;
 }
 
-.credits-index {
-  display: block;
-  font-size: 0.66rem;
-  letter-spacing: 0.32em;
-  color: var(--accent);
-  margin-bottom: 1.3rem;
-}
-
-.credits-title {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 400;
-  font-size: clamp(2.2rem, 5vw, 3.4rem);
-  line-height: 1.08;
+.wheel-art {
+  flex: 1;
+  display: grid;
+  place-items: center;
   color: var(--ink);
-  text-wrap: balance;
+  opacity: 0.82;
 }
 
-.credits-sub {
-  display: block;
-  margin-top: 1.2rem;
-  font-size: 0.64rem;
-  letter-spacing: 0.28em;
-  color: var(--ink-soft);
-}
-
-/* the subtitle track only exists in the anime world */
-.credits-jp {
-  display: none;
-  margin-top: 0.7rem;
-  font-family: var(--font-jp);
-  font-size: 0.85rem;
-  letter-spacing: 0.3em;
-  color: var(--ink-soft);
-}
-
-html[data-mode="anime"] .credits-jp {
-  display: block;
-}
-
-/* timecode: five ticks, the current segment lit */
-.credits-ticks {
-  position: absolute;
-  bottom: 6vh;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 0.7rem;
-}
-
-.credits-tick {
-  width: 22px;
-  height: 1px;
-  background: var(--line);
-  transition: background-color 0.3s var(--ease-out);
-}
-
-.credits-tick.is-on {
-  background: var(--accent);
-}
-
-/* static fallback: reduced motion (or no scrub) reads as a plain list */
-.credits.is-static {
+.wheel-art svg {
+  width: 82%;
   height: auto;
-  padding: clamp(4rem, 10vh, 7rem) 0;
 }
 
-.credits.is-static .credits-stage {
+.wheel-art .acc { fill: var(--accent); }
+.wheel-art .acc-s { fill: none; stroke: var(--accent); }
+
+.wheel-label {
+  text-align: center;
+  font-size: 0.56rem;
+  letter-spacing: 0.22em;
+  color: var(--ink-soft);
+  padding-top: 0.55rem;
+}
+
+/* the plates get Japanese captions in the anime world */
+.wheel-jp {
+  display: none;
+  margin-top: 0.35rem;
+  font-family: var(--font-jp);
+  letter-spacing: 0.28em;
+}
+
+html[data-mode="anime"] .wheel-jp {
+  display: block;
+}
+
+/* static fallback: reduced motion reads as a small gallery of plates */
+.wheel.is-static {
+  height: auto;
+  padding: clamp(4rem, 10vh, 7rem) var(--gutter);
+}
+
+.wheel.is-static .wheel-stage {
   position: static;
   height: auto;
   display: block;
   overflow: visible;
+  perspective: none;
 }
 
-.credits.is-static .credits-card {
-  opacity: 1;
-  visibility: visible;
-  padding: 2.2rem var(--gutter);
+.wheel.is-static .wheel-track {
+  width: auto;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  justify-content: center;
 }
 
-.credits.is-static .credits-ticks {
-  display: none;
+.wheel.is-static .wheel-card {
+  position: static;
+  transform: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 @keyframes marquee {
