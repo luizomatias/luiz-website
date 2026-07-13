@@ -1220,63 +1220,42 @@ html[data-mode="anime"] .portrait-mode--anime {
   .portrait-hint--touch { display: inline; }
 }
 
-/* ---------- marquee ---------- */
-/* an editorial type strip, not a boxed ticker: no background, no borders,
-   oversized serif italics alternating with hollow grotesk, and the motion
-   is scroll-driven (marquee.ts) rather than a constant keyframe loop */
-.marquee {
-  overflow: hidden;
-  padding: clamp(2.2rem, 7vh, 4.2rem) 0 clamp(1.4rem, 5vh, 2.8rem);
+/* ---------- interlude ---------- */
+/* a quiet editorial section break between the hero and the work: a small
+   ornament that follows the world, one whispered line of domains, and a
+   lot of air — the restraint is the design */
+.interlude {
+  padding: clamp(4.5rem, 11vh, 7.5rem) var(--gutter);
+  text-align: center;
   position: relative;
   z-index: 1;
-  transform: skewY(var(--scroll-skew, 0deg));
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
-  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
 }
 
-.marquee-track {
-  display: flex;
-  align-items: center;
-  gap: clamp(2.2rem, 4.5vw, 4rem);
-  width: max-content;
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: clamp(2.5rem, 6.5vw, 5.2rem);
-  line-height: 1.15;
-  white-space: nowrap;
-  will-change: transform;
-}
-
-/* every other phrase goes hollow — grotesk outline against the serif ink */
-@supports ((-webkit-text-stroke: 1px black) or (text-stroke: 1px black)) {
-  .marquee-track span:nth-of-type(even) {
-    font-family: var(--font-body);
-    font-style: normal;
-    font-weight: 700;
-    letter-spacing: 0.005em;
-    color: transparent;
-    -webkit-text-stroke: 1px var(--ink);
-    opacity: 0.8;
-  }
-}
-
-.marquee-track i {
-  font-style: normal;
-  font-size: 0.8em;
+.interlude-mark {
+  display: block;
+  margin-bottom: 1.5rem;
   color: var(--accent);
+  font-size: 0.7rem;
+  line-height: 1;
 }
 
-/* separator follows the world: minimal geometry IRL, komejirushi in anime */
-.marquee-track i::before {
+.interlude-mark::before {
   content: "◆";
-  font-size: 0.55em;
-  vertical-align: middle;
 }
 
-html[data-mode="anime"] .marquee-track i::before {
+/* the ornament follows the world: minimal geometry IRL, komejirushi in anime */
+html[data-mode="anime"] .interlude-mark::before {
   content: "※";
   font-family: var(--font-jp);
-  font-size: 1em;
+  font-size: 1.05rem;
+}
+
+.interlude-line {
+  font-size: 0.68rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-wrap: balance;
 }
 
 @keyframes marquee {
@@ -1940,7 +1919,6 @@ html[data-theme="dark"] .job-flag {
     clip-path: none;
   }
 
-  .marquee-track,
   .stack-track,
   .grain,
   .hero-scroll-line,
