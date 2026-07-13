@@ -20,4 +20,33 @@ export function initNavigation(): void {
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') setOpen(false)
   })
+
+  // ---- scroll-spy: mark the section currently in view ----------------------
+  // a narrow band around the upper-middle of the viewport decides the winner,
+  // so exactly one section is "current" at a time (none while in the hero)
+  const byTarget = new Map<Element, HTMLAnchorElement>()
+  links.forEach((link) => {
+    const target = document.querySelector(link.hash)
+    if (target) byTarget.set(target, link)
+  })
+
+  const setCurrent = (section: Element | null) => {
+    byTarget.forEach((link, el) => {
+      const on = el === section
+      link.classList.toggle('is-current', on)
+      if (on) link.setAttribute('aria-current', 'true')
+      else link.removeAttribute('aria-current')
+    })
+  }
+
+  const spy = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) setCurrent(entry.target)
+        else if (byTarget.get(entry.target)?.classList.contains('is-current')) setCurrent(null)
+      }
+    },
+    { rootMargin: '-35% 0px -60% 0px' }
+  )
+  byTarget.forEach((_link, el) => spy.observe(el))
 }
