@@ -25,6 +25,7 @@ export function initHeroShader(): void {
     uniform vec2 uRes;
     uniform float uTime;
     uniform float uMode;    // 0 = IRL, 1 = anime
+    uniform float uStrength; // overall mix toward the smoke, set per theme+world
     uniform vec3 uPaper;
     uniform vec3 uInk;
     uniform vec3 uAccent;
@@ -69,10 +70,9 @@ export function initHeroShader(): void {
       float accentAmt = smoothstep(0.45, 0.9, f) * (0.06 + 0.54 * uMode);
       col = mix(col, uAccent, accentAmt);
 
-      // pull the whole thing back toward paper so it stays ambient —
-      // IRL now carries visible grey smoke, anime keeps its stronger bloom
-      float strength = 0.48 + 0.14 * uMode;
-      col = mix(uPaper, col, strength);
+      // pull the whole thing back toward paper so it stays ambient;
+      // the strength is decided on the CPU per theme+world
+      col = mix(uPaper, col, uStrength);
 
       gl_FragColor = vec4(col, 1.0);
     }
@@ -110,6 +110,7 @@ export function initHeroShader(): void {
   const uRes = gl.getUniformLocation(prog, 'uRes')
   const uTime = gl.getUniformLocation(prog, 'uTime')
   const uMode = gl.getUniformLocation(prog, 'uMode')
+  const uStrength = gl.getUniformLocation(prog, 'uStrength')
   const uPaper = gl.getUniformLocation(prog, 'uPaper')
   const uInk = gl.getUniformLocation(prog, 'uInk')
   const uAccent = gl.getUniformLocation(prog, 'uAccent')
@@ -152,11 +153,20 @@ export function initHeroShader(): void {
   let mode = root.dataset.mode === 'anime' ? 1 : 0
   let tgtMode = mode
 
+  // how far the smoke is allowed to depart from plain paper. Dark paper
+  // shows the light wisps readily; light paper needs a stronger mix for
+  // the grey to carry the same presence
+  const strengthFor = () =>
+    root.dataset.mode === 'anime' ? 0.62 : root.dataset.theme === 'dark' ? 0.48 : 0.75
+  let strength = strengthFor()
+  let tgtStrength = strength
+
   const refreshTargets = () => {
     tgtPaper = readVar('--paper')
     tgtInk = readVar('--ink')
     tgtAccent = readVar('--accent')
     tgtMode = root.dataset.mode === 'anime' ? 1 : 0
+    tgtStrength = strengthFor()
   }
 
   new MutationObserver(() => {
@@ -185,6 +195,7 @@ export function initHeroShader(): void {
     gl.uniform2f(uRes, canvas.width, canvas.height)
     gl.uniform1f(uTime, time)
     gl.uniform1f(uMode, mode)
+    gl.uniform1f(uStrength, strength)
     gl.uniform3fv(uPaper, paper)
     gl.uniform3fv(uInk, ink)
     gl.uniform3fv(uAccent, accent)
@@ -197,6 +208,7 @@ export function initHeroShader(): void {
     ink = tgtInk
     accent = tgtAccent
     mode = tgtMode
+    strength = tgtStrength
     draw(0)
   }
 
@@ -207,6 +219,7 @@ export function initHeroShader(): void {
     }
     // ease palette + mode toward their targets for a smooth world switch
     mode = lerp(mode, tgtMode, 0.05)
+    strength = lerp(strength, tgtStrength, 0.05)
     paper = lerp3(paper, tgtPaper, 0.06)
     ink = lerp3(ink, tgtInk, 0.06)
     accent = lerp3(accent, tgtAccent, 0.06)
