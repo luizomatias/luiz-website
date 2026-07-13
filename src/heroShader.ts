@@ -2,8 +2,8 @@
  *  behind the name. It reads its palette straight from the CSS custom
  *  properties (--paper-deep / --ink / --accent), so it tracks both the
  *  light/dark theme and the IRL⇄anime world for free. In the real world it
- *  is a barely-there grey drift; in the anime world the accent bleeds
- *  through like ink in water and the flow quickens. Kept deliberately quiet
+ *  is a slow grey smoke — ink only, no accent; in the anime world the
+ *  accent bleeds through like ink in water and the flow quickens. Kept deliberately quiet
  *  so the type stays readable — it is ambience, not a light show. */
 export function initHeroShader(): void {
   const canvas = document.querySelector<HTMLCanvasElement>('.hero-shader')
@@ -52,7 +52,7 @@ export function initHeroShader(): void {
     void main() {
       vec2 uv = gl_FragCoord.xy / uRes.xy;
       vec2 p = uv * vec2(uRes.x / uRes.y, 1.0) * 1.4;
-      float t = uTime * (0.03 + 0.05 * uMode);
+      float t = uTime * (0.045 + 0.035 * uMode);
 
       // domain warp for that liquid, flowing feel
       vec2 q = vec2(fbm(p + vec2(0.0, t)), fbm(p + vec2(5.2, -t)));
@@ -65,12 +65,13 @@ export function initHeroShader(): void {
       // paper → a touch of ink for depth
       vec3 col = mix(uPaper, mix(uPaper, uInk, 0.35), f);
 
-      // accent veins — faint in IRL, blooming in anime
-      float accentAmt = smoothstep(0.45, 0.9, f) * (0.10 + 0.5 * uMode);
+      // accent veins — a whisper in IRL (the smoke stays grey), blooming in anime
+      float accentAmt = smoothstep(0.45, 0.9, f) * (0.06 + 0.54 * uMode);
       col = mix(col, uAccent, accentAmt);
 
-      // pull the whole thing back toward paper so it stays ambient
-      float strength = 0.28 + 0.32 * uMode;
+      // pull the whole thing back toward paper so it stays ambient —
+      // IRL now carries visible grey smoke, anime keeps its stronger bloom
+      float strength = 0.48 + 0.14 * uMode;
       col = mix(uPaper, col, strength);
 
       gl_FragColor = vec4(col, 1.0);
