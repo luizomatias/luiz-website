@@ -1220,42 +1220,118 @@ html[data-mode="anime"] .portrait-mode--anime {
   .portrait-hint--touch { display: inline; }
 }
 
-/* ---------- interlude ---------- */
-/* a quiet editorial section break between the hero and the work: a small
-   ornament that follows the world, one whispered line of domains, and a
-   lot of air — the restraint is the design */
-.interlude {
-  padding: clamp(4.5rem, 11vh, 7.5rem) var(--gutter);
-  text-align: center;
+/* ---------- credits: cinematic domain sequence ---------- */
+/* opening-credits treatment for the domains: a sticky stage, one title
+   card at a time dissolving through as the scroll scrubs the sequence,
+   with a slow Ken Burns drift. In the anime world every card is
+   subtitled in Japanese, like a film print. */
+.credits {
+  height: 330vh;
   position: relative;
   z-index: 1;
 }
 
-.interlude-mark {
+.credits-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.credits-card {
+  grid-area: 1 / 1;
+  text-align: center;
+  padding: 0 var(--gutter);
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform, opacity;
+}
+
+.credits-index {
   display: block;
-  margin-bottom: 1.5rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.32em;
   color: var(--accent);
-  font-size: 0.7rem;
-  line-height: 1;
+  margin-bottom: 1.3rem;
 }
 
-.interlude-mark::before {
-  content: "◆";
-}
-
-/* the ornament follows the world: minimal geometry IRL, komejirushi in anime */
-html[data-mode="anime"] .interlude-mark::before {
-  content: "※";
-  font-family: var(--font-jp);
-  font-size: 1.05rem;
-}
-
-.interlude-line {
-  font-size: 0.68rem;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
+.credits-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  line-height: 1.08;
+  color: var(--ink);
   text-wrap: balance;
+}
+
+.credits-sub {
+  display: block;
+  margin-top: 1.2rem;
+  font-size: 0.64rem;
+  letter-spacing: 0.28em;
+  color: var(--ink-soft);
+}
+
+/* the subtitle track only exists in the anime world */
+.credits-jp {
+  display: none;
+  margin-top: 0.7rem;
+  font-family: var(--font-jp);
+  font-size: 0.85rem;
+  letter-spacing: 0.3em;
+  color: var(--ink-soft);
+}
+
+html[data-mode="anime"] .credits-jp {
+  display: block;
+}
+
+/* timecode: five ticks, the current segment lit */
+.credits-ticks {
+  position: absolute;
+  bottom: 6vh;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.7rem;
+}
+
+.credits-tick {
+  width: 22px;
+  height: 1px;
+  background: var(--line);
+  transition: background-color 0.3s var(--ease-out);
+}
+
+.credits-tick.is-on {
+  background: var(--accent);
+}
+
+/* static fallback: reduced motion (or no scrub) reads as a plain list */
+.credits.is-static {
+  height: auto;
+  padding: clamp(4rem, 10vh, 7rem) 0;
+}
+
+.credits.is-static .credits-stage {
+  position: static;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.credits.is-static .credits-card {
+  opacity: 1;
+  visibility: visible;
+  padding: 2.2rem var(--gutter);
+}
+
+.credits.is-static .credits-ticks {
+  display: none;
 }
 
 @keyframes marquee {
