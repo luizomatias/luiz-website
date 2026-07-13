@@ -157,7 +157,7 @@ export function initHeroShader(): void {
   // shows the light wisps readily; light paper needs a stronger mix for
   // the grey to carry the same presence
   const strengthFor = () =>
-    root.dataset.mode === 'anime' ? 0.62 : root.dataset.theme === 'dark' ? 0.48 : 0.75
+    root.dataset.mode === 'anime' ? 0.62 : root.dataset.theme === 'dark' ? 0.48 : 0.92
   let strength = strengthFor()
   let tgtStrength = strength
 

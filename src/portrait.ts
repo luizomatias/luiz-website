@@ -19,6 +19,19 @@ export function initPortrait(): void {
 
   // --- lens follows the pointer (desktop only) ---
   if (fine && frame) {
+    // holo-card layers (poke-holo style): a light glare that tracks the
+    // pointer in both worlds, and a rainbow foil that only exists in the
+    // anime world. Positioned by the same --lens-x/y the lens already sets.
+    if (!reduced) {
+      const holo = document.createElement('div')
+      holo.className = 'portrait-holo'
+      holo.setAttribute('aria-hidden', 'true')
+      const glare = document.createElement('div')
+      glare.className = 'portrait-glare'
+      glare.setAttribute('aria-hidden', 'true')
+      frame.append(holo, glare)
+    }
+
     portrait.addEventListener('mousemove', (e) => {
       const r = frame.getBoundingClientRect()
       const x = ((e.clientX - r.left) / r.width) * 100
@@ -33,11 +46,12 @@ export function initPortrait(): void {
       if (!reduced) {
         const px = (e.clientX - r.left) / r.width
         const py = (e.clientY - r.top) / r.height
-        const max = root.dataset.mode === 'anime' ? 7 : 4.5
+        const max = root.dataset.mode === 'anime' ? 20 : 14
         frame.style.setProperty('--ry', `${((px - 0.5) * max).toFixed(2)}deg`)
         frame.style.setProperty('--rx', `${((0.5 - py) * max).toFixed(2)}deg`)
         frame.style.setProperty('--tilt-x', `${((px - 0.5) * 6).toFixed(1)}px`)
         frame.style.setProperty('--tilt-y', `${((py - 0.5) * 6).toFixed(1)}px`)
+        frame.style.setProperty('--pscale', '1.02')
       }
     })
 
@@ -48,6 +62,7 @@ export function initPortrait(): void {
       frame.style.setProperty('--ry', '0deg')
       frame.style.setProperty('--tilt-x', '0px')
       frame.style.setProperty('--tilt-y', '0px')
+      frame.style.setProperty('--pscale', '1')
     })
   }
 

@@ -1,62 +1,79 @@
-/** The domain plates ride a 3D cylinder: each card sits at a fixed angle
- *  around the axis and the scroll rotates the whole wheel, so plates
- *  sweep through the centre one after another — a coverflow scrubbed by
- *  the page, not an autoplaying carousel. */
+/** The domain plates ride a full 360° carousel that spins on its own —
+ *  slow, continuous, wrapping around so the first plate keeps returning
+ *  to the back of the queue. Plates are double-sided: the far side of
+ *  the cylinder shows their printed backs. No sticky stage, no scroll
+ *  trap; it turns quietly in normal flow and pauses offscreen. */
 export function initWheel(): void {
   const section = document.querySelector<HTMLElement>('.wheel')
   if (!section) return
   const cards = [...section.querySelectorAll<HTMLElement>('.wheel-card')]
   if (cards.length === 0) return
 
+  // build the double side: front keeps the existing art + label, the
+  // back gets a printed monogram and plate number
+  const n = cards.length
+  cards.forEach((card, i) => {
+    const front = document.createElement('div')
+    front.className = 'wheel-face wheel-face--front'
+    while (card.firstChild) front.appendChild(card.firstChild)
+    const back = document.createElement('div')
+    back.className = 'wheel-face wheel-face--back'
+    back.setAttribute('aria-hidden', 'true')
+    back.innerHTML =
+      `<span class="wheel-back-mark">Lz</span>` +
+      `<span class="wheel-back-index mono">${String(i + 1).padStart(2, '0')} / ${String(n).padStart(2, '0')}</span>`
+    card.append(front, back)
+  })
+
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
     section.classList.add('is-static')
     return
   }
 
-  const n = cards.length
-  const step = 21 // degrees between plates
-  const span = (n - 1) * step
-  let radius = 560
-  let raf = 0
+  const step = 360 / n
+  let radius = 170
 
-  // radius follows the card size so the gaps stay consistent across
-  // viewports: R = w/2 / tan(step/2), plus a little breathing room
+  // radius follows the card size so the plates keep a consistent gap
   const measure = () => {
-    const w = cards[0].offsetWidth || 200
-    radius = (w / 2 / Math.tan(((step / 2) * Math.PI) / 180)) * 1.18
-    request()
+    const w = cards[0].offsetWidth || 110
+    radius = (w / 2 / Math.tan(((step / 2) * Math.PI) / 180)) * 1.45
   }
   new ResizeObserver(measure).observe(cards[0])
 
-  const pose = (offset: number) => {
+  let angle = 0
+  let raf = 0
+  let last = 0
+  let visible = false
+
+  const pose = () => {
     cards.forEach((card, i) => {
-      const a = i * step - span / 2 + offset
-      const front = Math.cos((a * Math.PI) / 180)
+      const a = i * step + angle
       card.style.transform =
-        `translate(-50%, -50%) rotateY(${a.toFixed(2)}deg) translateZ(${radius.toFixed(0)}px)` +
-        ` scale(${(0.94 + Math.max(0, front) * 0.06).toFixed(4)})`
-      card.style.opacity = (0.3 + Math.max(0, front) * 0.7).toFixed(3)
-      card.style.visibility = front < 0.03 ? 'hidden' : 'visible'
-      card.style.zIndex = String(100 + Math.round(front * 100))
+        `translate(-50%, -50%) rotateY(${a.toFixed(2)}deg) translateZ(${radius.toFixed(0)}px)`
     })
   }
 
-  const update = () => {
+  const tick = (now: number) => {
     raf = 0
-    const rect = section.getBoundingClientRect()
-    if (rect.bottom < 0 || rect.top > window.innerHeight) return
-    const scrollable = rect.height - window.innerHeight
-    if (scrollable <= 0) return
-    const p = Math.min(1, Math.max(0, -rect.top / scrollable))
-    // first plate centred at p=0, last at p=1
-    pose(span / 2 - p * span)
+    const dt = Math.min(0.05, (now - last) / 1000 || 0.016)
+    last = now
+    angle = (angle - 8 * dt) % 360 // one full turn ≈ 45s
+    pose()
+    if (visible && !document.hidden) raf = requestAnimationFrame(tick)
   }
 
-  const request = () => {
-    if (!raf) raf = requestAnimationFrame(update)
+  const start = () => {
+    if (raf || !visible || document.hidden) return
+    last = performance.now()
+    raf = requestAnimationFrame(tick)
   }
 
-  document.addEventListener('scroll', request, { passive: true })
-  window.addEventListener('resize', request)
+  new IntersectionObserver((entries) => {
+    visible = entries[0].isIntersecting
+    if (visible) start()
+  }).observe(section)
+  document.addEventListener('visibilitychange', start)
+
   measure()
+  pose()
 }

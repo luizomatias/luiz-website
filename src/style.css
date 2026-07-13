@@ -721,8 +721,7 @@ html[data-theme="dark"][data-mode="anime"] .nav {
   }
 }
 
-.hero-grid,
-.hero-foot {
+.hero-grid {
   position: relative;
   z-index: 1;
 }
@@ -977,44 +976,11 @@ body.is-loaded .hero-line .char {
   .hero-vertical { display: none; }
 }
 
-.hero-foot {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding: 1.4rem 0;
-  border-top: 1px solid var(--line);
-  color: var(--ink-soft);
-  margin-top: clamp(1.5rem, 4vh, 3rem);
-}
-
-.hero-scroll {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.hero-scroll-line {
-  width: 1px;
-  height: 34px;
-  background: var(--ink-soft);
-  animation: scroll-hint 1.8s var(--ease-snap) infinite;
-  transform-origin: top;
-}
-
-@keyframes scroll-hint {
-  0% { transform: scaleY(0); transform-origin: top; }
-  45% { transform: scaleY(1); transform-origin: top; }
-  55% { transform: scaleY(1); transform-origin: bottom; }
-  100% { transform: scaleY(0); transform-origin: bottom; }
-}
-
 @media (max-width: 900px) {
   .hero-grid {
     grid-template-columns: 1fr;
     gap: 2.5rem;
   }
-  .hero-foot span:last-child { display: none; }
 }
 
 /* ---------- portrait: the switch ---------- */
@@ -1037,10 +1003,59 @@ body.is-loaded .hero-line .char {
   overflow: hidden;
   border: 1px solid var(--line-strong);
   background: var(--paper-deep);
-  /* 3D tilt toward the cursor, like a photo held in hand (set in portrait.ts) */
+  /* 3D tilt toward the cursor, like a holo card held in hand (portrait.ts) */
   transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
-    translate(var(--tilt-x, 0px), var(--tilt-y, 0px));
-  transition: box-shadow 0.4s, transform 0.18s ease-out;
+    translate(var(--tilt-x, 0px), var(--tilt-y, 0px)) scale(var(--pscale, 1));
+  transition: box-shadow 0.4s, transform 0.22s ease-out;
+}
+
+/* holo-card overlays: a glare that follows the pointer everywhere, and a
+   rainbow foil reserved for the anime world (layers built in portrait.ts) */
+.portrait-glare {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: radial-gradient(
+    farthest-corner circle at var(--lens-x, 50%) var(--lens-y, 50%),
+    rgba(255, 255, 255, 0.65) 0%,
+    rgba(255, 255, 255, 0.12) 35%,
+    rgba(0, 0, 0, 0.18) 100%
+  );
+  mix-blend-mode: soft-light;
+  opacity: 0;
+  transition: opacity 0.45s var(--ease-out);
+}
+
+.portrait.is-lensing .portrait-glare {
+  opacity: 1;
+}
+
+/* the anime world gets an extra specular sweep — a colourless gloss
+   band that sails across the art as the pointer moves, like the shine
+   on a varnished card */
+.portrait-holo {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 32%,
+    rgba(255, 255, 255, 0.35) 44%,
+    rgba(255, 255, 255, 0.85) 50%,
+    rgba(255, 255, 255, 0.35) 56%,
+    transparent 68%
+  );
+  background-size: 260% 260%;
+  background-position: calc(100% - var(--lens-x, 50%)) calc(100% - var(--lens-y, 50%));
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 0.45s var(--ease-out);
+}
+
+html[data-mode="anime"] .portrait.is-lensing .portrait-holo {
+  opacity: 0.5;
 }
 
 .portrait:focus-visible .portrait-frame {
@@ -1225,45 +1240,107 @@ html[data-mode="anime"] .portrait-mode--anime {
    SVG diagrams in the site's ink — arranged around a cylinder that the
    scroll rotates, so the plates sweep through the centre one by one
    (see wheel.ts) */
-.wheel {
-  height: 300vh;
-  position: relative;
-  z-index: 1;
+/* About sits right under the hero now — tighten its lead-in */
+.hero + .about {
+  padding-top: clamp(2rem, 5vh, 3.5rem);
 }
 
+/* the stack section splits in two: the technology marquees run on the
+   left, the domain carousel turns on the right */
+.stack-split {
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  margin-bottom: clamp(3rem, 7vh, 5rem);
+}
+
+.stack-split .stack-marquees {
+  margin-bottom: 0;
+}
+
+@media (max-width: 800px) {
+  .stack-split {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.wheel {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+/* a free-spinning 360° carousel in normal flow — no sticky, no scroll
+   trap; the plates ride the cylinder around and show their printed
+   backs on the far side (wheel.ts drives the rotation) */
 .wheel-stage {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  height: 100svh;
+  height: clamp(220px, 30vh, 280px);
   display: grid;
   place-items: center;
-  overflow: hidden;
-  perspective: 1500px;
-  perspective-origin: 50% 42%;
+  perspective: 1100px;
+  perspective-origin: 50% 32%;
 }
 
 .wheel-track {
   position: relative;
   width: 0;
   height: 0;
+  transform: rotateX(-8deg);
   transform-style: preserve-3d;
 }
 
 .wheel-card {
   position: absolute;
-  width: clamp(150px, 17vw, 215px);
+  width: clamp(84px, 8vw, 108px);
   aspect-ratio: 3 / 4;
   margin: 0;
-  padding: clamp(0.8rem, 1.4vw, 1.1rem);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.wheel-face {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
+  padding: clamp(0.5rem, 0.8vw, 0.7rem);
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 12px;
   background: linear-gradient(165deg, var(--paper), var(--paper-deep));
-  box-shadow: 0 22px 44px -20px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 14px 28px -16px rgba(0, 0, 0, 0.2);
   backface-visibility: hidden;
-  will-change: transform, opacity;
+}
+
+/* the printed back: inner rule, monogram, plate number */
+.wheel-face--back {
+  transform: rotateY(180deg);
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.wheel-face--back::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.wheel-back-mark {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.3rem;
+  color: var(--ink-soft);
+}
+
+.wheel-back-index {
+  font-size: 0.45rem;
+  letter-spacing: 0.24em;
+  color: var(--ink-soft);
+  opacity: 0.75;
 }
 
 .wheel-art {
@@ -1275,7 +1352,7 @@ html[data-mode="anime"] .portrait-mode--anime {
 }
 
 .wheel-art svg {
-  width: 82%;
+  width: 84%;
   height: auto;
 }
 
@@ -1284,18 +1361,18 @@ html[data-mode="anime"] .portrait-mode--anime {
 
 .wheel-label {
   text-align: center;
-  font-size: 0.56rem;
-  letter-spacing: 0.22em;
+  font-size: 0.48rem;
+  letter-spacing: 0.18em;
   color: var(--ink-soft);
-  padding-top: 0.55rem;
+  padding-top: 0.45rem;
 }
 
 /* the plates get Japanese captions in the anime world */
 .wheel-jp {
   display: none;
-  margin-top: 0.35rem;
+  margin-top: 0.3rem;
   font-family: var(--font-jp);
-  letter-spacing: 0.28em;
+  letter-spacing: 0.24em;
 }
 
 html[data-mode="anime"] .wheel-jp {
@@ -1303,16 +1380,9 @@ html[data-mode="anime"] .wheel-jp {
 }
 
 /* static fallback: reduced motion reads as a small gallery of plates */
-.wheel.is-static {
-  height: auto;
-  padding: clamp(4rem, 10vh, 7rem) var(--gutter);
-}
-
 .wheel.is-static .wheel-stage {
-  position: static;
   height: auto;
   display: block;
-  overflow: visible;
   perspective: none;
 }
 
@@ -1321,15 +1391,23 @@ html[data-mode="anime"] .wheel-jp {
   height: auto;
   display: flex;
   flex-wrap: wrap;
-  gap: 1.2rem;
+  gap: 1rem;
   justify-content: center;
+  transform: none;
 }
 
 .wheel.is-static .wheel-card {
   position: static;
   transform: none !important;
-  opacity: 1 !important;
-  visibility: visible !important;
+  width: clamp(110px, 12vw, 140px);
+}
+
+.wheel.is-static .wheel-face {
+  position: static;
+}
+
+.wheel.is-static .wheel-face--back {
+  display: none;
 }
 
 @keyframes marquee {
@@ -1995,7 +2073,6 @@ html[data-theme="dark"] .job-flag {
 
   .stack-track,
   .grain,
-  .hero-scroll-line,
   .hero-eyebrow-dot,
   .preloader-jp,
   .hero-glow::before,
