@@ -10,6 +10,7 @@ import { initProgress } from './progress'
 import { initTheme } from './theme'
 import { initTimeline } from './timeline'
 import { initVelocity } from './velocity'
+import { initMarquee } from './marquee'
 import { initSmoothScroll } from './smoothscroll'
 import { initLede } from './lede'
 import { initPipeline } from './pipeline'
@@ -34,6 +35,7 @@ initClock()
 initProgress()
 initTimeline()
 initVelocity()
+initMarquee()
 initSmoothScroll()
 initLede()
 initPipeline()

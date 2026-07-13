@@ -1221,28 +1221,43 @@ html[data-mode="anime"] .portrait-mode--anime {
 }
 
 /* ---------- marquee ---------- */
+/* an editorial type strip, not a boxed ticker: no background, no borders,
+   oversized serif italics alternating with hollow grotesk, and the motion
+   is scroll-driven (marquee.ts) rather than a constant keyframe loop */
 .marquee {
   overflow: hidden;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  padding: 0.9rem 0;
+  padding: clamp(2.2rem, 7vh, 4.2rem) 0 clamp(1.4rem, 5vh, 2.8rem);
   position: relative;
   z-index: 1;
-  background: var(--paper-deep);
-  transition: background-color var(--theme-fade) var(--ease-snap);
   transform: skewY(var(--scroll-skew, 0deg));
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
 }
 
 .marquee-track {
   display: flex;
   align-items: center;
-  gap: 2.5rem;
+  gap: clamp(2.2rem, 4.5vw, 4rem);
   width: max-content;
-  animation: marquee var(--marquee-speed) linear infinite;
   font-family: var(--font-display);
   font-style: italic;
-  font-size: clamp(1.3rem, 2.6vw, 2rem);
+  font-size: clamp(2.5rem, 6.5vw, 5.2rem);
+  line-height: 1.15;
   white-space: nowrap;
+  will-change: transform;
+}
+
+/* every other phrase goes hollow — grotesk outline against the serif ink */
+@supports ((-webkit-text-stroke: 1px black) or (text-stroke: 1px black)) {
+  .marquee-track span:nth-of-type(even) {
+    font-family: var(--font-body);
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: 0.005em;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--ink);
+    opacity: 0.8;
+  }
 }
 
 .marquee-track i {
