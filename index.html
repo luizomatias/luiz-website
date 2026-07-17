@@ -7,14 +7,14 @@
     <meta name="description" content="Luiz Otávio Matias da Luz — AI/ML Engineer building production-grade machine learning systems end-to-end. Belo Horizonte, Brazil." />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Luiz Otávio — AI/ML Engineer" />
-    <meta property="og:description" content="Production ML systems end-to-end — data pipelines over billions of records, LLM pipelines, embeddings platforms. Two worlds, one engineer." />
+    <meta property="og:description" content="Production ML systems end-to-end — data pipelines over millions of records, LLM pipelines, embeddings platforms. Two worlds, one engineer." />
     <meta property="og:url" content="https://luizomatias.github.io/luiz-website/" />
     <meta property="og:image" content="https://luizomatias.github.io/luiz-website/og-site.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Luiz Otávio — AI/ML Engineer" />
-    <meta name="twitter:description" content="Production ML systems end-to-end — data pipelines over billions of records, LLM pipelines, embeddings platforms." />
+    <meta name="twitter:description" content="Production ML systems end-to-end — data pipelines over millions of records, LLM pipelines, embeddings platforms." />
     <meta name="twitter:image" content="https://luizomatias.github.io/luiz-website/og-site.jpg" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231D1D1F'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' fill='%23F5F5F7' text-anchor='middle' font-style='italic'%3ELz%3C/text%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -22,8 +22,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
     <script>
+      // mark that JS is alive: hidden-until-reveal styles only apply under
+      // html.js, so content is never gated on an animation that can't run
+      document.documentElement.classList.add('js')
       // set theme before first paint to avoid a light flash
-      (function () {
+      ;(function () {
         try {
           var t = localStorage.getItem('theme')
           if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -141,13 +144,13 @@
                     data-cursor="LATENT" aria-label="Dissolve the name into a 3D embedding">EMBED THE NAME → R³</button>
             <p class="hero-tag reveal reveal-mask">
               <span>I design and operate <strong>production ML systems</strong> end-to-end —
-              from data pipelines over billions of records to models people
+              from data pipelines over millions of records to models people
               actually use.</span>
             </p>
             <div class="hero-cta reveal">
               <a class="btn" href="mailto:luizomatias2@gmail.com" data-magnetic data-cursor="EMAIL">
                 <span>Get in touch</span>
-                <span class="btn-arrow">→</span>
+                <span class="btn-arrow">↗</span>
               </a>
               <span class="hero-hint mono">the portrait is not just a portrait →</span>
             </div>
@@ -210,21 +213,21 @@
           </p>
           <p class="about-para reveal">
             I currently lead large-scale AI systems at <strong>Starday Foods</strong>:
-            data platforms, LLM pipelines, and automated analysis over billions of
+            data platforms, LLM pipelines, and automated analysis over millions of
             records. The two worlds on this site mirror how I approach the work —
             rigorous engineering underneath, expressive experiences on the surface.
           </p>
           <ul class="stats reveal-group">
             <li class="stat reveal">
-              <span class="stat-value"><span data-count="6">0</span>+</span>
+              <span class="stat-value"><span data-count="6">6</span>+</span>
               <span class="stat-label mono">YEARS SHIPPING ML</span>
             </li>
             <li class="stat reveal">
-              <span class="stat-value"><span data-count="7">0</span>×</span>
+              <span class="stat-value"><span data-count="7">7</span>×</span>
               <span class="stat-label mono">FASTER MODEL DEV</span>
             </li>
             <li class="stat reveal">
-              <span class="stat-value"><span data-count="2">0</span></span>
+              <span class="stat-value"><span data-count="2">2</span></span>
               <span class="stat-label mono">DEGREES — ENG &amp; AI</span>
             </li>
           </ul>
@@ -273,7 +276,7 @@
             </div>
             <ul class="job-points">
               <li>First data-focused technical lead — owning the end-to-end ML and data platform behind multiple AI products.</li>
-              <li>Designed and deployed scalable ML infrastructure on AWS (S3, Glue, Athena, Iceberg, ECS Fargate, Step Functions) processing billions of records.</li>
+              <li>Designed and deployed scalable ML infrastructure on AWS (S3, Glue, Athena, Iceberg, ECS Fargate, Step Functions) processing millions of records.</li>
               <li>Built production NLP &amp; LLM pipelines that convert unstructured data into structured signals, plus ontology-based scoring and topic aggregation.</li>
               <li>Partner with product and business teams to turn ambiguous requirements into production ML systems.</li>
             </ul>
