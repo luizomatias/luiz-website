@@ -54,7 +54,7 @@ function initLiquid(): LiquidInstance | null {
     {
       simResolution: 128,
       dyeResolution: 512,
-      densityDissipation: 0.984,
+      densityDissipation: 0.988,
       velocityDissipation: 0.972,
       pressureIterations: 8,
       curl: 3.6,
@@ -77,22 +77,29 @@ function initLiquid(): LiquidInstance | null {
 
   if (!reduceMotion) {
     window.setTimeout(() => {
-      instance.splat(0.18, 0.08, 18, 92)
-      instance.splat(0.48, 0.04, -12, 74)
-      instance.splat(0.78, 0.1, 9, 84)
+      instance.splat(0.12, 0.08, 18, 96)
+      instance.splat(0.34, 0.04, -12, 82)
+      instance.splat(0.58, 0.07, 14, 90)
+      instance.splat(0.82, 0.1, -9, 88)
     }, 500)
 
     const exhale = () => {
       if (!document.hidden) {
         const x = 0.12 + Math.random() * 0.76
         const drift = (Math.random() - 0.5) * 28
-        const lift = 52 + Math.random() * 42
+        const lift = 62 + Math.random() * 46
         instance.splat(x, 0.035 + Math.random() * 0.08, drift, lift)
+        instance.splat(
+          Math.min(0.94, Math.max(0.06, x + (Math.random() - 0.5) * 0.12)),
+          0.02 + Math.random() * 0.05,
+          drift * -0.45,
+          lift * 0.72,
+        )
       }
-      window.setTimeout(exhale, 2200 + Math.random() * 1800)
+      window.setTimeout(exhale, 1500 + Math.random() * 1200)
     }
 
-    window.setTimeout(exhale, 1800)
+    window.setTimeout(exhale, 1200)
   }
 
   return instance
