@@ -476,12 +476,10 @@ html[data-theme="dark"] .liquid-output {
 }
 
 .hero-title-wrap {
-  position: relative;
-  z-index: 3;
+  width: calc(100% - clamp(11rem, 16vw, 15.5rem) - clamp(1.5rem, 3vw, 4rem));
   display: flex;
   align-items: center;
   padding: 2vh 0;
-  pointer-events: none;
 }
 
 .hero-title {
@@ -1808,7 +1806,19 @@ html[data-theme="dark"] .timeline-role p {
   }
 
   .hero-bottom {
-    grid-template-columns: 1fr minmax(12rem, 15rem);
+    grid-template-columns: minmax(0, 1fr) minmax(11rem, 13rem);
+  }
+
+  .hero-title-wrap {
+    width: 100%;
+  }
+
+  .portrait-card {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    grid-column: 2;
+    width: 100%;
   }
 
   .liquid-hint {
@@ -1930,7 +1940,6 @@ html[data-theme="dark"] .timeline-role p {
   }
 
   .portrait-card {
-    position: relative;
     width: 100%;
   }
 
