@@ -194,6 +194,23 @@ function initTilts(): void {
   })
 }
 
+function initPortraitSystem(): void {
+  const portrait = document.querySelector<HTMLElement>('.portrait-card')
+  if (!portrait || reduceMotion || matchMedia('(hover: hover) and (pointer: fine)').matches) return
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return
+      portrait.classList.add('is-scanning')
+      window.setTimeout(() => portrait.classList.remove('is-scanning'), 1650)
+      observer.disconnect()
+    },
+    { threshold: 0.55 },
+  )
+
+  observer.observe(portrait)
+}
+
 function initClock(): void {
   const target = document.querySelector<HTMLElement>('#console-clock')
   if (!target) return
@@ -218,4 +235,5 @@ initReveals()
 initProgress()
 initMenu()
 initTilts()
+initPortraitSystem()
 initClock()
